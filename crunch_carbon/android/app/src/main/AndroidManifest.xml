@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.crunch_carbon">
+    package="com.example.uche">
    <application
-        android:label="crunch_carbon"
+        android:label="uche"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

@@ -1,4 +1,4 @@
-package com.example.crunch_carbon
+package com.example.uche
 
 import io.flutter.embedding.android.FlutterActivity
 
