@@ -7,10 +7,7 @@ import 'SignUp.dart';
 
 void main() {
   runApp(MyApp());
-  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-    systemNavigationBarColor: Colors.transparent,
-    statusBarColor: Colors.transparent,
-  ));
+  SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.top]);
 }
 
 class MyApp extends StatelessWidget {

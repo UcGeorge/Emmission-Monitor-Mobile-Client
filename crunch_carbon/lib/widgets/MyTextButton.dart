@@ -40,7 +40,7 @@ class myTextButton extends StatelessWidget {
             Size(150.0, 55.0),
           ),
           side: MaterialStateProperty.all<BorderSide>(
-            BorderSide(color: Colors.black, width: 2.0),
+            BorderSide(color: Colors.black, width: 1.0),
           ),
         ),
       ),
