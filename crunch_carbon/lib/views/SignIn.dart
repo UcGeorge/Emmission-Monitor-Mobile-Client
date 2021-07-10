@@ -1,10 +1,27 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:provider/provider.dart';
+import 'package:uche/providers/LoginSignupProvider.dart';
 import 'package:uche/widgets/wigets.dart';
-import 'SignIn.dart';
+import 'SignUp.dart';
 
-class SignUp extends StatelessWidget {
+class SignIn extends StatefulWidget {
+  @override
+  State<SignIn> createState() => _SignInState();
+}
+
+class _SignInState extends State<SignIn> {
+  void login(BuildContext context) async {
+    context.read<LoginSignup>().login(context);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    login(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,7 +60,7 @@ class SignUp extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Sign up',
+                        'Sign in',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 31,
@@ -52,12 +69,8 @@ class SignUp extends StatelessWidget {
                       SizedBox(
                         height: 29.0,
                       ),
-                      ReuseableTextField(
-                        fieldName: 'Email',
-                      ),
-                      ReuseableTextField(
-                        fieldName: 'Password',
-                      ),
+                      ReuseableTextField('Email'),
+                      ReuseableTextField('Password'),
                       SizedBox(
                         height: 30.0,
                       ),
@@ -96,7 +109,7 @@ class SignUp extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              'Have an account already ?',
+                              'Don\'t have an account ?',
                               style: TextStyle(
                                 color: Colors.black,
                                 fontWeight: FontWeight.w500,
@@ -108,10 +121,10 @@ class SignUp extends StatelessWidget {
                                     context,
                                     PageTransition(
                                         type: PageTransitionType.fade,
-                                        child: SignIn()));
+                                        child: SignUp()));
                               },
                               child: Text(
-                                'Sign In',
+                                'Sign Up',
                                 style: TextStyle(
                                   color: Colors.black,
                                 ),

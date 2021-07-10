@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:provider/src/provider.dart';
+import 'package:uche/providers/PersistentStorage.dart';
+import 'package:uche/views/dashboard.dart';
 import 'package:uche/views/loginSignup.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -10,21 +13,32 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  void checkLogin() async {
+    bool hasToken = await context.read<StoredData>().checkLogin();
+
+    if (hasToken) {
+      Navigator.push(
+        context,
+        PageTransition(
+          type: PageTransitionType.leftToRight,
+          child: Dashboard(),
+        ),
+      );
+    } else {
+      Navigator.push(
+        context,
+        PageTransition(
+          type: PageTransitionType.fade,
+          child: LoginSignup(),
+        ),
+      );
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-    Future.delayed(
-      Duration(seconds: 2),
-      () {
-        Navigator.push(
-          context,
-          PageTransition(
-            type: PageTransitionType.fade,
-            child: LoginSignup(),
-          ),
-        );
-      },
-    );
+    checkLogin();
   }
 
   @override

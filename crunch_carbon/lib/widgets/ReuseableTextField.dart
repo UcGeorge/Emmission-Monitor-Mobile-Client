@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 
 class ReuseableTextField extends StatelessWidget {
-  ReuseableTextField({required this.fieldName});
-
-  final String fieldName;
+  final fieldName;
+  const ReuseableTextField(this.fieldName);
 
   @override
   Widget build(BuildContext context) {
@@ -26,10 +25,17 @@ class ReuseableTextField extends StatelessWidget {
           SizedBox(
             height: 45,
             child: TextField(
+              cursorColor: Colors.black,
+              textAlignVertical: TextAlignVertical.center,
               decoration: InputDecoration(
+                focusColor: Colors.black,
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(29),
+                  borderSide: BorderSide(color: Colors.black, width: 2.0),
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(29),
-                  borderSide: BorderSide(color: Colors.black, width: 10.0),
+                  borderSide: BorderSide(color: Colors.black, width: 1.0),
                 ),
               ),
             ),

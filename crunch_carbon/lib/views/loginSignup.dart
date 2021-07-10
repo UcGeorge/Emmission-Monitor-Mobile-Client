@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
+import 'package:uche/views/SignIn.dart';
+import 'package:uche/views/SignUp.dart';
 import 'package:uche/widgets/wigets.dart';
 
 class LoginSignup extends StatelessWidget {
@@ -50,16 +53,36 @@ class LoginSignup extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 myTextButton(
+                  context,
                   textColor: Colors.white,
                   buttonColor: Colors.black,
                   buttonName: 'Login',
-                  pageName: 'sign_in',
+                  onPressed: () {
+                    print("Clicked Login");
+                    Navigator.push(
+                      context,
+                      PageTransition(
+                        type: PageTransitionType.leftToRight,
+                        child: SignIn(),
+                      ),
+                    );
+                  },
                 ),
                 myTextButton(
+                  context,
                   textColor: Colors.black,
                   buttonColor: Colors.white,
                   buttonName: 'Register',
-                  pageName: 'sign_up',
+                  onPressed: () {
+                    print("Clicked Register");
+                    Navigator.push(
+                      context,
+                      PageTransition(
+                        type: PageTransitionType.leftToRight,
+                        child: SignUp(),
+                      ),
+                    );
+                  },
                 ),
               ],
             ),

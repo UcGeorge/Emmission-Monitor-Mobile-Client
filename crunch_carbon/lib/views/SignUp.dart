@@ -1,10 +1,10 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:uche/widgets/wigets.dart';
-import 'SignUp.dart';
+import 'SignIn.dart';
 
-class SignIn extends StatelessWidget {
+class SignUp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,7 +43,7 @@ class SignIn extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Sign in',
+                        'Sign up',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 31,
@@ -52,12 +52,8 @@ class SignIn extends StatelessWidget {
                       SizedBox(
                         height: 29.0,
                       ),
-                      ReuseableTextField(
-                        fieldName: 'Email',
-                      ),
-                      ReuseableTextField(
-                        fieldName: 'Password',
-                      ),
+                      ReuseableTextField('Email'),
+                      ReuseableTextField('Password'),
                       SizedBox(
                         height: 30.0,
                       ),
@@ -96,7 +92,7 @@ class SignIn extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              'Don\'t have an account ?',
+                              'Have an account already ?',
                               style: TextStyle(
                                 color: Colors.black,
                                 fontWeight: FontWeight.w500,
@@ -108,10 +104,10 @@ class SignIn extends StatelessWidget {
                                     context,
                                     PageTransition(
                                         type: PageTransitionType.fade,
-                                        child: SignUp()));
+                                        child: SignIn()));
                               },
                               child: Text(
-                                'Sign Up',
+                                'Sign In',
                                 style: TextStyle(
                                   color: Colors.black,
                                 ),
