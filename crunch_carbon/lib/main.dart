@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:uche/providers/DashboardProvider.dart';
 import 'package:uche/providers/LoginSignupProvider.dart';
 import 'package:uche/providers/PersistentStorage.dart';
 import 'package:uche/providers/SessionProvider.dart';
@@ -16,11 +17,15 @@ void main() {
         ChangeNotifierProvider(create: (context) => StoredData()),
         ChangeNotifierProvider(create: (context) => SessionProvider()),
         ChangeNotifierProvider(create: (context) => LoginSignup()),
+        ChangeNotifierProvider(create: (context) => DashboardProvider()),
       ],
       child: MyApp(),
     ),
   );
-  SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.top]);
+  // SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.top]);
+  SystemChrome.setSystemUIOverlayStyle(
+    SystemUiOverlayStyle(statusBarColor: Colors.black),
+  );
 }
 
 class MyApp extends StatelessWidget {

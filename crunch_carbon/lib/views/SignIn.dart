@@ -3,6 +3,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:uche/providers/LoginSignupProvider.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:uche/providers/PersistentStorage.dart';
+import 'package:uche/views/dashboard.dart';
 import 'package:uche/widgets/wigets.dart';
 import 'SignUp.dart';
 
@@ -12,14 +15,62 @@ class SignIn extends StatefulWidget {
 }
 
 class _SignInState extends State<SignIn> {
+  String? username;
+  String? password;
+  String? usernameError;
+  String? passwordError;
+  bool loading = false;
+  LoginStatus loginStatus = LoginStatus.LoggedOut;
+  Function loginAction = () {};
+
   void login(BuildContext context) async {
-    context.read<LoginSignup>().login(context);
+    setState(() {
+      usernameError = null;
+      passwordError = null;
+      loginStatus = LoginStatus.LoggedOut;
+      loading = true;
+    });
+    var loginStatus_temp = await context.read<LoginSignup>().login(
+          username ?? 'undefined',
+          password ?? 'undefined',
+        );
+    setState(() {
+      loading = false;
+      loginStatus = loginStatus_temp;
+    });
+    if (loginStatus == LoginStatus.Success) {
+      var token = context.read<LoginSignup>().token;
+      context.read<StoredData>().storeLodin(username!, password!, token!);
+      Navigator.push(
+        context,
+        PageTransition(
+          type: PageTransitionType.rightToLeft,
+          child: Dashboard(),
+        ),
+      );
+    }
   }
 
   @override
   void initState() {
     super.initState();
-    login(context);
+    loginAction = () {
+      setState(() {
+        usernameError = null;
+        passwordError = null;
+      });
+      if (username?.isEmpty ?? true) {
+        setState(() {
+          usernameError = "This is a required field";
+        });
+      } else if (password?.isEmpty ?? true) {
+        setState(() {
+          passwordError = "This is a required field";
+        });
+      } else {
+        login(context);
+      }
+    };
   }
 
   @override
@@ -28,28 +79,7 @@ class _SignInState extends State<SignIn> {
       extendBody: true,
       body: Column(
         children: [
-          Container(
-            width: MediaQuery.of(context).size.width,
-            height: 254,
-            child: Stack(
-              children: [
-                Positioned(
-                  top: -70,
-                  right: -140,
-                  child: Container(
-                    width: 450,
-                    height: 340,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage('images/Top Right Decoration.png'),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+          LoginSignupTopArt(),
           Expanded(
             child: ListView(
               children: [
@@ -69,20 +99,40 @@ class _SignInState extends State<SignIn> {
                       SizedBox(
                         height: 29.0,
                       ),
-                      ReuseableTextField('Email'),
-                      ReuseableTextField('Password'),
+                      ReuseableTextField(
+                        fieldName: 'Email',
+                        onTextChanged: (value) {
+                          username = value;
+                        },
+                        errorMessage: usernameError ??
+                            (loginStatus == LoginStatus.Faliure
+                                ? "There was an error signing you in."
+                                : null),
+                      ),
+                      ReuseableTextField(
+                        fieldName: 'Password',
+                        onTextChanged: (value) {
+                          password = value;
+                        },
+                        errorMessage: passwordError,
+                      ),
                       SizedBox(
                         height: 30.0,
                       ),
                       TextButton(
-                        onPressed: () {
-                          print('login button was clicked');
-                        },
-                        child: Text(
-                          'Login',
-                          style: TextStyle(
-                            color: Colors.white,
-                          ),
+                        onPressed: () => loginAction(),
+                        child: Center(
+                          child: loading
+                              ? const SpinKitFadingCircle(
+                                  color: Colors.white,
+                                  size: 15.0,
+                                )
+                              : Text(
+                                  'Login',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                  ),
+                                ),
                         ),
                         style: ButtonStyle(
                           backgroundColor: MaterialStateProperty.all<Color>(
@@ -118,10 +168,12 @@ class _SignInState extends State<SignIn> {
                             TextButton(
                               onPressed: () {
                                 Navigator.push(
-                                    context,
-                                    PageTransition(
-                                        type: PageTransitionType.fade,
-                                        child: SignUp()));
+                                  context,
+                                  PageTransition(
+                                    type: PageTransitionType.fade,
+                                    child: SignUp(),
+                                  ),
+                                );
                               },
                               child: Text(
                                 'Sign Up',

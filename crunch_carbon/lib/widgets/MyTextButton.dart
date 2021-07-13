@@ -5,18 +5,24 @@ class myTextButton extends StatelessWidget {
   final Color buttonColor;
   final String buttonName;
   final Function onPressed;
+  final double? width;
+  final double? height;
 
-  myTextButton(BuildContext context,
-      {required this.textColor,
-      required this.buttonColor,
-      required this.buttonName,
-      required this.onPressed});
+  myTextButton(
+    BuildContext context, {
+    required this.textColor,
+    required this.buttonColor,
+    required this.buttonName,
+    required this.onPressed,
+    this.width,
+    this.height,
+  });
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 45,
-      width: 169,
+      height: height ?? 45,
+      width: width ?? 169,
       child: TextButton(
         onPressed: () => onPressed(),
         child: Text(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/src/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uche/providers/PersistentStorage.dart';
 import 'package:uche/views/dashboard.dart';
 import 'package:uche/views/loginSignup.dart';
@@ -13,7 +14,16 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  Future<void> clearPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.remove('token');
+    prefs.remove('password');
+    prefs.remove('username');
+  }
+
   void checkLogin() async {
+    await Future.delayed(Duration(seconds: 2), () {});
+    // await clearPreferences();
     bool hasToken = await context.read<StoredData>().checkLogin();
 
     if (hasToken) {

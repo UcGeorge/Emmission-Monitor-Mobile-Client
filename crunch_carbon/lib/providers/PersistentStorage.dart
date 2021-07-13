@@ -7,4 +7,11 @@ class StoredData extends ChangeNotifier {
     String? token = prefs.getString('token');
     return token != null;
   }
+
+  void storeLodin(String username, String password, String token) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('token', token);
+    prefs.setString('password', password);
+    prefs.setString('username', username);
+  }
 }

@@ -1,38 +1,94 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:provider/provider.dart';
+import 'package:uche/providers/LoginSignupProvider.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:uche/providers/PersistentStorage.dart';
+import 'package:uche/views/dashboard.dart';
 import 'package:uche/widgets/wigets.dart';
 import 'SignIn.dart';
+import 'SignUp.dart';
 
-class SignUp extends StatelessWidget {
+class SignUp extends StatefulWidget {
+  @override
+  State<SignUp> createState() => _SignUpState();
+}
+
+class _SignUpState extends State<SignUp> {
+  String? name;
+  String? username;
+  String? password;
+  String? nameError;
+  String? usernameError;
+  String? passwordError;
+  bool loading = false;
+  SignupStatus loginStatus = SignupStatus.LoggedOut;
+  Function signupAction = () {};
+
+  void signup(BuildContext context) async {
+    setState(() {
+      usernameError = null;
+      passwordError = null;
+      loginStatus = SignupStatus.LoggedOut;
+      loading = true;
+    });
+    var loginStatus_temp = await context.read<LoginSignup>().signup(
+          name ?? 'undefined',
+          username ?? 'undefined',
+          password ?? 'undefined',
+        );
+    setState(() {
+      loading = false;
+      loginStatus = loginStatus_temp;
+    });
+    if (loginStatus == SignupStatus.Success) {
+      var token = context.read<LoginSignup>().token;
+      context.read<StoredData>().storeLodin(username!, password!, token!);
+      Navigator.push(
+        context,
+        PageTransition(
+          type: PageTransitionType.rightToLeft,
+          child: Dashboard(),
+        ),
+      );
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    signupAction = () {
+      setState(() {
+        usernameError = null;
+        passwordError = null;
+        nameError = null;
+      });
+      if (name?.isEmpty ?? true) {
+        setState(() {
+          nameError = "This is a required field";
+        });
+      } else if (password?.isEmpty ?? true) {
+        setState(() {
+          passwordError = "This is a required field";
+        });
+      } else if (username?.isEmpty ?? true) {
+        setState(() {
+          usernameError = "This is a required field";
+        });
+      } else {
+        signup(context);
+      }
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       extendBody: true,
       body: Column(
         children: [
-          Container(
-            width: MediaQuery.of(context).size.width,
-            height: 254,
-            child: Stack(
-              children: [
-                Positioned(
-                  top: -70,
-                  right: -140,
-                  child: Container(
-                    width: 450,
-                    height: 340,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage('images/Top Right Decoration.png'),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+          LoginSignupTopArt(),
           Expanded(
             child: ListView(
               children: [
@@ -52,20 +108,47 @@ class SignUp extends StatelessWidget {
                       SizedBox(
                         height: 29.0,
                       ),
-                      ReuseableTextField('Email'),
-                      ReuseableTextField('Password'),
+                      ReuseableTextField(
+                        fieldName: 'Nickname',
+                        onTextChanged: (value) {
+                          name = value;
+                        },
+                        errorMessage: nameError ??
+                            (loginStatus == SignupStatus.Faliure
+                                ? "There was an error signing you in."
+                                : null),
+                      ),
+                      ReuseableTextField(
+                        fieldName: 'Email',
+                        onTextChanged: (value) {
+                          username = value;
+                        },
+                        errorMessage: usernameError,
+                      ),
+                      ReuseableTextField(
+                        fieldName: 'Password',
+                        onTextChanged: (value) {
+                          password = value;
+                        },
+                        errorMessage: passwordError,
+                      ),
                       SizedBox(
                         height: 30.0,
                       ),
                       TextButton(
-                        onPressed: () {
-                          print('login button was clicked');
-                        },
-                        child: Text(
-                          'Login',
-                          style: TextStyle(
-                            color: Colors.white,
-                          ),
+                        onPressed: () => signupAction(),
+                        child: Center(
+                          child: loading
+                              ? const SpinKitFadingCircle(
+                                  color: Colors.white,
+                                  size: 15.0,
+                                )
+                              : Text(
+                                  'Signup',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                  ),
+                                ),
                         ),
                         style: ButtonStyle(
                           backgroundColor: MaterialStateProperty.all<Color>(
@@ -101,10 +184,12 @@ class SignUp extends StatelessWidget {
                             TextButton(
                               onPressed: () {
                                 Navigator.push(
-                                    context,
-                                    PageTransition(
-                                        type: PageTransitionType.fade,
-                                        child: SignIn()));
+                                  context,
+                                  PageTransition(
+                                    type: PageTransitionType.fade,
+                                    child: SignIn(),
+                                  ),
+                                );
                               },
                               child: Text(
                                 'Sign In',
