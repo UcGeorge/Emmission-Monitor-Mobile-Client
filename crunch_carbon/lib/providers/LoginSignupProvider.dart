@@ -5,6 +5,8 @@ import 'package:http/http.dart' as http;
 
 class LoginSignup extends ChangeNotifier {
   String? token;
+  String? name;
+
   Future<LoginStatus> login(String username, String password) async {
     try {
       print('Logging in');
@@ -25,6 +27,7 @@ class LoginSignup extends ChangeNotifier {
         try {
           Map<String, dynamic> jsonBody = jsonDecode(responseBody);
           token = jsonBody['token'];
+          name = jsonBody['name'];
           return LoginStatus.Success;
         } catch (e) {
           print('Json parse error: $e');
