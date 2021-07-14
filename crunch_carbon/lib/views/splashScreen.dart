@@ -3,6 +3,7 @@ import 'package:page_transition/page_transition.dart';
 import 'package:provider/src/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uche/providers/PersistentStorage.dart';
+import 'package:uche/providers/UserProvider.dart';
 import 'package:uche/views/dashboard.dart';
 import 'package:uche/views/loginSignup.dart';
 
@@ -19,6 +20,7 @@ class _SplashScreenState extends State<SplashScreen> {
     prefs.remove('token');
     prefs.remove('password');
     prefs.remove('username');
+    prefs.remove('nickname');
   }
 
   void checkLogin() async {
@@ -27,6 +29,14 @@ class _SplashScreenState extends State<SplashScreen> {
     bool hasToken = await context.read<StoredData>().checkLogin();
 
     if (hasToken) {
+      final prefs = await SharedPreferences.getInstance();
+      context.read<UserProvider>().setAttr(
+            email: prefs.getString('username')!,
+            password: prefs.getString('password')!,
+            nickname: prefs.getString('nickname')!,
+          );
+      print(
+          "email: ${prefs.getString('username')},\npassword: ${prefs.getString('password')},\nnickname: ${prefs.getString('nickname')},");
       Navigator.push(
         context,
         PageTransition(

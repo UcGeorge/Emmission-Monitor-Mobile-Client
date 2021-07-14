@@ -1,21 +1,23 @@
 import 'package:flutter/material.dart';
 
 class myTextButton extends StatelessWidget {
-  final Color textColor;
-  final Color buttonColor;
-  final String buttonName;
+  final Color? textColor;
+  final Color? buttonColor;
+  final String? buttonName;
   final Function onPressed;
   final double? width;
   final double? height;
+  final Widget? child;
 
   myTextButton(
     BuildContext context, {
-    required this.textColor,
-    required this.buttonColor,
-    required this.buttonName,
+    this.textColor,
+    this.buttonColor,
+    this.buttonName,
     required this.onPressed,
     this.width,
     this.height,
+    this.child,
   });
 
   @override
@@ -25,16 +27,17 @@ class myTextButton extends StatelessWidget {
       width: width ?? 169,
       child: TextButton(
         onPressed: () => onPressed(),
-        child: Text(
-          buttonName,
-          style: TextStyle(
-            color: textColor,
-            fontSize: 13,
-          ),
-        ),
+        child: child ??
+            Text(
+              buttonName!,
+              style: TextStyle(
+                color: textColor,
+                fontSize: 13,
+              ),
+            ),
         style: ButtonStyle(
           backgroundColor: MaterialStateProperty.all<Color>(
-            buttonColor,
+            buttonColor ?? Colors.black,
           ),
           shape: MaterialStateProperty.all<RoundedRectangleBorder>(
             RoundedRectangleBorder(

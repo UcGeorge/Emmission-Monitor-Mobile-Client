@@ -6,6 +6,7 @@ import 'package:uche/providers/DashboardProvider.dart';
 import 'package:uche/providers/LoginSignupProvider.dart';
 import 'package:uche/providers/PersistentStorage.dart';
 import 'package:uche/providers/SessionProvider.dart';
+import 'package:uche/providers/UserProvider.dart';
 import 'package:uche/views/SignIn.dart';
 import 'package:uche/views/SignUp.dart';
 import 'package:uche/views/splashScreen.dart';
@@ -18,6 +19,7 @@ void main() {
         ChangeNotifierProvider(create: (context) => SessionProvider()),
         ChangeNotifierProvider(create: (context) => LoginSignup()),
         ChangeNotifierProvider(create: (context) => DashboardProvider()),
+        ChangeNotifierProvider(create: (context) => UserProvider()),
       ],
       child: MyApp(),
     ),
