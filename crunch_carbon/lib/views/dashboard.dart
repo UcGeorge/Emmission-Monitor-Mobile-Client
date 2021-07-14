@@ -1,10 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/src/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uche/providers/DashboardProvider.dart';
 import 'package:uche/providers/UserProvider.dart';
+import 'package:uche/views/profile.dart';
 import 'package:uche/widgets/MyTextButton.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -231,6 +233,16 @@ class MenuRoutes extends StatelessWidget {
             thickness: .5,
           ),
           ListTile(
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                PageTransition(
+                  type: PageTransitionType.fade,
+                  child: ProfileView(),
+                ),
+              );
+            },
             leading: CircleAvatar(
               radius: 19,
               backgroundColor: Colors.white,
@@ -363,37 +375,40 @@ class HomepageActivity extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () => onTap(),
-      child: Container(
-        height: 136,
-        width: 136,
-        padding: EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Colors.black,
-          borderRadius: BorderRadius.circular(20),
+      child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20.0),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            CircleAvatar(
-              radius: 23,
-              backgroundColor: Colors.white,
-              child: SvgPicture.asset(
-                imageAsset,
-                height: 24,
-                color: Colors.black,
-                semanticsLabel: 'steering-wheel',
+        elevation: 5,
+        color: Colors.black,
+        child: Container(
+          height: 136,
+          width: 136,
+          padding: EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              CircleAvatar(
+                radius: 23,
+                backgroundColor: Colors.white,
+                child: SvgPicture.asset(
+                  imageAsset,
+                  height: 24,
+                  color: Colors.black,
+                  semanticsLabel: 'steering-wheel',
+                ),
               ),
-            ),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 17,
-                color: Colors.white,
-                fontWeight: FontWeight.normal,
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 17,
+                  color: Colors.white,
+                  fontWeight: FontWeight.normal,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

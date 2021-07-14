@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 
 class LoginSignupTopArt extends StatelessWidget {
+  final double? top;
+  final double? right;
   const LoginSignupTopArt({
     Key? key,
+    this.top,
+    this.right,
   }) : super(key: key);
 
   @override
@@ -13,8 +17,8 @@ class LoginSignupTopArt extends StatelessWidget {
       child: Stack(
         children: [
           Positioned(
-            top: -70,
-            right: -140,
+            top: top ?? -70,
+            right: right ?? -140,
             child: Container(
               width: 450,
               height: 340,

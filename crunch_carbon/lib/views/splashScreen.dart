@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/src/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -71,17 +72,25 @@ class _SplashScreenState extends State<SplashScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image(
-                  image: AssetImage(
-                    'images/Logo.png',
+                Container(
+                  width: 120,
+                  height: 96,
+                  child: SvgPicture.asset(
+                    'images/Group 3571.svg',
+                    height: 96,
+                    semanticsLabel: 'Group 3571',
                   ),
                 ),
                 SizedBox(
-                  height: 50.0,
+                  height: 40.0,
                 ),
-                Image(
-                  image: AssetImage(
-                    'images/logo text.png',
+                Container(
+                  width: 257.23,
+                  height: 116.56,
+                  child: SvgPicture.asset(
+                    'images/Path 4694.svg',
+                    height: 116.56,
+                    semanticsLabel: 'Path 4694',
                   ),
                 ),
               ],
