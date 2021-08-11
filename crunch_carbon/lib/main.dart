@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:uche/providers/DashboardProvider.dart';
-import 'package:uche/providers/LoginSignupProvider.dart';
+import 'package:uche/providers/APIProvider.dart';
 import 'package:uche/providers/PersistentStorage.dart';
 import 'package:uche/providers/SessionProvider.dart';
 import 'package:uche/providers/UserProvider.dart';
@@ -17,7 +17,7 @@ void main() {
       providers: [
         ChangeNotifierProvider(create: (context) => StoredData()),
         ChangeNotifierProvider(create: (context) => SessionProvider()),
-        ChangeNotifierProvider(create: (context) => LoginSignup()),
+        ChangeNotifierProvider(create: (context) => API()),
         ChangeNotifierProvider(create: (context) => DashboardProvider()),
         ChangeNotifierProvider(create: (context) => UserProvider()),
       ],

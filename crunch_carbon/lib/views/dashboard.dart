@@ -83,46 +83,50 @@ class _DashboardState extends State<Dashboard> {
             ),
             Expanded(
               flex: 435,
-              child: Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(15),
-                    topRight: Radius.circular(15),
-                  ),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.all(24),
-                      child: FuelConsumptionSection(),
+              child: Hero(
+                tag: 'bottomWhite',
+                child: Container(
+                  width: double.infinity,
+                  height: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(15),
+                      topRight: Radius.circular(15),
                     ),
-                    StylishDivider(),
-                    Container(
-                      margin: EdgeInsets.symmetric(
-                          vertical: 34.9, horizontal: 30.5),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          HomepageActivity(
-                            imageAsset: 'images/steering-wheel.svg',
-                            label: 'Start a Trip',
-                            onTap: () {},
-                          ),
-                          SizedBox(
-                            width: 42,
-                          ),
-                          HomepageActivity(
-                            imageAsset: 'images/My activities Icon.svg',
-                            label: 'Activity',
-                            onTap: () {},
-                          ),
-                        ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.all(24),
+                        child: FuelConsumptionSection(),
                       ),
-                    )
-                  ],
+                      StylishDivider(),
+                      Container(
+                        margin: EdgeInsets.symmetric(
+                            vertical: 34.9, horizontal: 30.5),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            HomepageActivity(
+                              imageAsset: 'images/steering-wheel.svg',
+                              label: 'Start a Trip',
+                              onTap: () {},
+                            ),
+                            SizedBox(
+                              width: 42,
+                            ),
+                            HomepageActivity(
+                              imageAsset: 'images/My activities Icon.svg',
+                              label: 'Activity',
+                              onTap: () {},
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -344,7 +348,7 @@ class MenuUser extends StatelessWidget {
           ),
         ),
         title: Text(
-          context.read<UserProvider>().nickname?.toUpperCase() ??
+          context.watch<UserProvider>().nickname?.toUpperCase() ??
               'myname@gmail.com',
           style: TextStyle(
             overflow: TextOverflow.fade,
@@ -373,7 +377,7 @@ class HomepageActivity extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    return GestureDetector(
       onTap: () => onTap(),
       child: Card(
         shape: RoundedRectangleBorder(
@@ -443,84 +447,89 @@ class FuelConsumptionSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 83,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Fuel Consumption',
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Spacer(),
-              RichText(
-                text: TextSpan(
-                  text: context.watch<DashboardProvider>().totalC?.toString() ??
-                      '0',
-                  style: TextStyle(
-                      fontSize: 29,
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold),
-                  children: const <TextSpan>[
-                    TextSpan(
-                      text: '.k km ',
-                    ),
-                  ],
-                ),
-              ),
-              Spacer(),
-              Text(
-                'This week',
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-          myTextButton(
-            context,
-            onPressed: () {},
-            width: 77,
-            height: 34,
-            child: Row(
+    return Card(
+      elevation: 0,
+      margin: EdgeInsets.all(0),
+      child: SizedBox(
+        height: 83,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Spacer(),
-                Icon(
-                  Icons.arrow_drop_down_sharp,
-                  color: Colors.white,
-                  size: 24,
+                Text(
+                  'Fuel Consumption',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 Spacer(),
                 RichText(
                   text: TextSpan(
-                    text: context
-                            .watch<DashboardProvider>()
-                            .percentC
-                            ?.toString() ??
-                        '0',
+                    text:
+                        context.watch<DashboardProvider>().totalC?.toString() ??
+                            '0',
                     style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 13,
-                    ),
+                        fontSize: 29,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold),
                     children: const <TextSpan>[
                       TextSpan(
-                        text: '%',
+                        text: '.k km ',
                       ),
                     ],
                   ),
                 ),
                 Spacer(),
+                Text(
+                  'This week',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ],
             ),
-          ),
-        ],
+            myTextButton(
+              context,
+              onPressed: () {},
+              width: 77,
+              height: 34,
+              child: Row(
+                children: [
+                  Spacer(),
+                  Icon(
+                    Icons.arrow_drop_down_sharp,
+                    color: Colors.white,
+                    size: 24,
+                  ),
+                  Spacer(),
+                  RichText(
+                    text: TextSpan(
+                      text: context
+                              .watch<DashboardProvider>()
+                              .percentC
+                              ?.toString() ??
+                          '0',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 13,
+                      ),
+                      children: const <TextSpan>[
+                        TextSpan(
+                          text: '%',
+                        ),
+                      ],
+                    ),
+                  ),
+                  Spacer(),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

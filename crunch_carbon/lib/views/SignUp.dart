@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:uche/providers/LoginSignupProvider.dart';
+import 'package:uche/providers/APIProvider.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:uche/providers/PersistentStorage.dart';
 import 'package:uche/providers/UserProvider.dart';
@@ -35,7 +35,7 @@ class _SignUpState extends State<SignUp> {
       loginStatus = SignupStatus.LoggedOut;
       loading = true;
     });
-    var loginStatus_temp = await context.read<LoginSignup>().signup(
+    var loginStatus_temp = await context.read<API>().signup(
           name ?? 'undefined',
           username ?? 'undefined',
           password ?? 'undefined',
@@ -45,7 +45,7 @@ class _SignUpState extends State<SignUp> {
       loginStatus = loginStatus_temp;
     });
     if (loginStatus == SignupStatus.Success) {
-      var token = context.read<LoginSignup>().token;
+      var token = context.read<API>().token;
       context
           .read<StoredData>()
           .storeLodin(username!, password!, name!, token!);

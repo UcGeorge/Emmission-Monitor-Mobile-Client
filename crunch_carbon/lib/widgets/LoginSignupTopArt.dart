@@ -3,17 +3,20 @@ import 'package:flutter/material.dart';
 class LoginSignupTopArt extends StatelessWidget {
   final double? top;
   final double? right;
+  final double? height;
   const LoginSignupTopArt({
     Key? key,
     this.top,
     this.right,
+    this.height,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      // color: Colors.red,
       width: MediaQuery.of(context).size.width,
-      height: 254,
+      height: height ?? 254,
       child: Stack(
         children: [
           Positioned(

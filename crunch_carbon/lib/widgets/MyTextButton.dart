@@ -36,6 +36,8 @@ class myTextButton extends StatelessWidget {
               ),
             ),
         style: ButtonStyle(
+          overlayColor:
+              MaterialStateProperty.all<Color>(Colors.black.withOpacity(0.1)),
           backgroundColor: MaterialStateProperty.all<Color>(
             buttonColor ?? Colors.black,
           ),

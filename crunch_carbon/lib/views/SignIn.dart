@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:uche/providers/LoginSignupProvider.dart';
+import 'package:uche/providers/APIProvider.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:uche/providers/PersistentStorage.dart';
 import 'package:uche/providers/UserProvider.dart';
@@ -32,7 +32,7 @@ class _SignInState extends State<SignIn> {
       loginStatus = LoginStatus.LoggedOut;
       loading = true;
     });
-    var loginStatus_temp = await context.read<LoginSignup>().login(
+    var loginStatus_temp = await context.read<API>().login(
           username ?? 'undefined',
           password ?? 'undefined',
         );
@@ -41,9 +41,10 @@ class _SignInState extends State<SignIn> {
       loginStatus = loginStatus_temp;
     });
     if (loginStatus == LoginStatus.Success) {
-      var token = context.read<LoginSignup>().token;
-      context.read<StoredData>().storeLodin(
-          username!, password!, context.read<LoginSignup>().name!, token!);
+      var token = context.read<API>().token;
+      context
+          .read<StoredData>()
+          .storeLodin(username!, password!, context.read<API>().name!, token!);
       final prefs = await SharedPreferences.getInstance();
       context.read<UserProvider>().setAttr(
             email: prefs.getString('username')!,
