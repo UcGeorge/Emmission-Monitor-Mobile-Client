@@ -195,7 +195,27 @@ class ProfileView extends StatelessWidget {
                         SizedBox(height: 40),
                         myTextButton(
                           context,
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              PageTransition(
+                                type: PageTransitionType.fade,
+                                child: EditDetails(
+                                  label: 'Password',
+                                  updateAction: (value) {
+                                    return context.read<API>().update(
+                                          context
+                                              .read<UserProvider>()
+                                              .nickname!,
+                                          context.read<UserProvider>().email!,
+                                          value,
+                                        );
+                                  },
+                                  originalValue: '••••••••••••••••••',
+                                ),
+                              ),
+                            );
+                          },
                           buttonColor: Colors.white,
                           height: 45,
                           width: double.infinity,
