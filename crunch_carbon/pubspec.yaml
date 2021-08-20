@@ -1,5 +1,5 @@
-name: uche
-description: A new Flutter project.
+name: crunch_carbon
+description: A Carbon footprint monitor for drivers.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `pub publish`. This is preferred for private packages.
