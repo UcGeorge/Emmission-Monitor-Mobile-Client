@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:uche/views/SignIn.dart';
-import 'package:uche/views/SignUp.dart';
-import 'package:uche/widgets/wigets.dart';
+import 'package:crunch_carbon/views/authentication/SignIn.dart';
+import 'package:crunch_carbon/views/authentication/SignUp.dart';
+import 'package:crunch_carbon/widgets/wigets.dart';
 
 class LoginSignup extends StatelessWidget {
   @override

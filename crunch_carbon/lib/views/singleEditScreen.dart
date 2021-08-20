@@ -3,9 +3,9 @@ import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/src/provider.dart';
-import 'package:uche/providers/APIProvider.dart';
-import 'package:uche/providers/UserProvider.dart';
-import 'package:uche/widgets/wigets.dart';
+import 'package:crunch_carbon/providers/APIProvider.dart';
+import 'package:crunch_carbon/providers/UserProvider.dart';
+import 'package:crunch_carbon/widgets/wigets.dart';
 
 class EditDetails extends StatefulWidget {
   final String originalValue;

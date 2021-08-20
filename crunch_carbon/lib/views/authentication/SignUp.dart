@@ -3,36 +3,39 @@ import 'package:flutter/cupertino.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:uche/providers/APIProvider.dart';
+import 'package:crunch_carbon/providers/APIProvider.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:uche/providers/PersistentStorage.dart';
-import 'package:uche/providers/UserProvider.dart';
-import 'package:uche/views/dashboard.dart';
-import 'package:uche/widgets/wigets.dart';
-import 'SignUp.dart';
+import 'package:crunch_carbon/providers/PersistentStorage.dart';
+import 'package:crunch_carbon/providers/UserProvider.dart';
+import 'package:crunch_carbon/views/dashboard/dashboard.dart';
+import 'package:crunch_carbon/widgets/wigets.dart';
+import 'SignIn.dart';
 
-class SignIn extends StatefulWidget {
+class SignUp extends StatefulWidget {
   @override
-  State<SignIn> createState() => _SignInState();
+  State<SignUp> createState() => _SignUpState();
 }
 
-class _SignInState extends State<SignIn> {
+class _SignUpState extends State<SignUp> {
+  String? name;
   String? username;
   String? password;
+  String? nameError;
   String? usernameError;
   String? passwordError;
   bool loading = false;
-  LoginStatus loginStatus = LoginStatus.LoggedOut;
-  Function loginAction = () {};
+  SignupStatus loginStatus = SignupStatus.LoggedOut;
+  Function signupAction = () {};
 
-  void login(BuildContext context) async {
+  void signup(BuildContext context) async {
     setState(() {
       usernameError = null;
       passwordError = null;
-      loginStatus = LoginStatus.LoggedOut;
+      loginStatus = SignupStatus.LoggedOut;
       loading = true;
     });
-    var loginStatus_temp = await context.read<API>().login(
+    var loginStatus_temp = await context.read<API>().signup(
+          name ?? 'undefined',
           username ?? 'undefined',
           password ?? 'undefined',
         );
@@ -40,11 +43,11 @@ class _SignInState extends State<SignIn> {
       loading = false;
       loginStatus = loginStatus_temp;
     });
-    if (loginStatus == LoginStatus.Success) {
+    if (loginStatus == SignupStatus.Success) {
       var token = context.read<API>().token;
       context
           .read<StoredData>()
-          .storeLodin(username!, password!, context.read<API>().name!, token!);
+          .storeLodin(username!, password!, name!, token!);
       final prefs = await SharedPreferences.getInstance();
       context.read<UserProvider>().setAttr(
             email: prefs.getString('username')!,
@@ -64,21 +67,26 @@ class _SignInState extends State<SignIn> {
   @override
   void initState() {
     super.initState();
-    loginAction = () {
+    signupAction = () {
       setState(() {
         usernameError = null;
         passwordError = null;
+        nameError = null;
       });
-      if (username?.isEmpty ?? true) {
+      if (name?.isEmpty ?? true) {
         setState(() {
-          usernameError = "This is a required field";
+          nameError = "This is a required field";
         });
       } else if (password?.isEmpty ?? true) {
         setState(() {
           passwordError = "This is a required field";
         });
+      } else if (username?.isEmpty ?? true) {
+        setState(() {
+          usernameError = "This is a required field";
+        });
       } else {
-        login(context);
+        signup(context);
       }
     };
   }
@@ -100,7 +108,7 @@ class _SignInState extends State<SignIn> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Sign in',
+                        'Sign up',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 31,
@@ -110,14 +118,21 @@ class _SignInState extends State<SignIn> {
                         height: 29.0,
                       ),
                       ReuseableTextField(
+                        fieldName: 'Nickname',
+                        onTextChanged: (value) {
+                          name = value;
+                        },
+                        errorMessage: nameError ??
+                            (loginStatus == SignupStatus.Faliure
+                                ? "There was an error signing you in."
+                                : null),
+                      ),
+                      ReuseableTextField(
                         fieldName: 'Email',
                         onTextChanged: (value) {
                           username = value;
                         },
-                        errorMessage: usernameError ??
-                            (loginStatus == LoginStatus.Faliure
-                                ? "There was an error signing you in."
-                                : null),
+                        errorMessage: usernameError,
                       ),
                       ReuseableTextField(
                         fieldName: 'Password',
@@ -130,7 +145,7 @@ class _SignInState extends State<SignIn> {
                         height: 30.0,
                       ),
                       TextButton(
-                        onPressed: () => loginAction(),
+                        onPressed: () => signupAction(),
                         child: Center(
                           child: loading
                               ? const SpinKitFadingCircle(
@@ -138,7 +153,7 @@ class _SignInState extends State<SignIn> {
                                   size: 15.0,
                                 )
                               : Text(
-                                  'Login',
+                                  'Signup',
                                   style: TextStyle(
                                     color: Colors.white,
                                   ),
@@ -169,7 +184,7 @@ class _SignInState extends State<SignIn> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              'Don\'t have an account ?',
+                              'Have an account already ?',
                               style: TextStyle(
                                 color: Colors.black,
                                 fontWeight: FontWeight.w500,
@@ -181,12 +196,12 @@ class _SignInState extends State<SignIn> {
                                   context,
                                   PageTransition(
                                     type: PageTransitionType.fade,
-                                    child: SignUp(),
+                                    child: SignIn(),
                                   ),
                                 );
                               },
                               child: Text(
-                                'Sign Up',
+                                'Sign In',
                                 style: TextStyle(
                                   color: Colors.black,
                                 ),

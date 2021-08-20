@@ -2,14 +2,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:uche/providers/DashboardProvider.dart';
-import 'package:uche/providers/APIProvider.dart';
-import 'package:uche/providers/PersistentStorage.dart';
-import 'package:uche/providers/SessionProvider.dart';
-import 'package:uche/providers/UserProvider.dart';
-import 'package:uche/views/SignIn.dart';
-import 'package:uche/views/SignUp.dart';
-import 'package:uche/views/splashScreen.dart';
+import 'package:crunch_carbon/providers/DashboardProvider.dart';
+import 'package:crunch_carbon/providers/APIProvider.dart';
+import 'package:crunch_carbon/providers/PersistentStorage.dart';
+import 'package:crunch_carbon/providers/SessionProvider.dart';
+import 'package:crunch_carbon/providers/UserProvider.dart';
+import 'package:crunch_carbon/views/authentication/SignIn.dart';
+import 'package:crunch_carbon/views/authentication/SignUp.dart';
+import 'package:crunch_carbon/views/splashScreen.dart';
 
 void main() {
   runApp(

@@ -3,10 +3,10 @@ import 'package:flutter_svg/svg.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/src/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:uche/providers/PersistentStorage.dart';
-import 'package:uche/providers/UserProvider.dart';
-import 'package:uche/views/dashboard.dart';
-import 'package:uche/views/loginSignup.dart';
+import 'package:crunch_carbon/providers/PersistentStorage.dart';
+import 'package:crunch_carbon/providers/UserProvider.dart';
+import 'package:crunch_carbon/views/authentication/loginSignup.dart';
+import 'package:crunch_carbon/views/dashboard/dashboard.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
