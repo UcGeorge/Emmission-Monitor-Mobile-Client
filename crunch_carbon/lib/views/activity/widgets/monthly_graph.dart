@@ -174,7 +174,7 @@ class MyBarChart extends StatelessWidget {
         gridData: FlGridData(
           show: true,
           drawHorizontalLine: true,
-          horizontalInterval: 20,
+          horizontalInterval: 1000,
           // checkToShowHorizontalLine: (value) => value == 480,
           getDrawingHorizontalLine: (value) {
             if (value == 5000) {
