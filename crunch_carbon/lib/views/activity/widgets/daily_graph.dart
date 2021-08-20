@@ -69,6 +69,15 @@ class _DailyGraphState extends State<DailyGraph> {
 
 class LineChartSample2 extends StatelessWidget {
   final bool showAvg;
+  final List<FlSpot> spots = [
+    FlSpot(0, 300),
+    FlSpot(2, 250),
+    FlSpot(4, 510),
+    FlSpot(6, 300),
+    FlSpot(8, 400),
+    FlSpot(10, 200),
+    FlSpot(11, 250),
+  ];
 
   final List<Color> gradientColors = [
     const Color(0xff147AD6),
@@ -79,6 +88,20 @@ class LineChartSample2 extends StatelessWidget {
     const Color(0xff147AD6),
     const Color(0xff147AD6),
   ];
+
+  List<Color> lineColors() {
+    List<Color> tbr = [];
+    for (FlSpot s in spots) {
+      if (s.y > 500) {
+        tbr.add(Colors.red);
+      } else if (s.y > 300) {
+        tbr.add(Colors.yellow);
+      } else {
+        tbr.add(Colors.green);
+      }
+    }
+    return tbr;
+  }
 
   LineChartSample2({Key? key, this.showAvg = false}) : super(key: key);
 
@@ -226,17 +249,13 @@ class LineChartSample2 extends StatelessWidget {
       maxY: 500,
       lineBarsData: [
         LineChartBarData(
-          spots: [
-            FlSpot(0, 200),
-            FlSpot(2.6, 120),
-            FlSpot(4.9, 400),
-            FlSpot(6.8, 300),
-            FlSpot(8, 350),
-            FlSpot(9.5, 200),
-            FlSpot(11, 250),
-          ],
+          spots: spots,
           isCurved: true,
           colors: lineColor,
+          // colorStops: spots.map((e) {
+          //   print(e.x / 12);
+          //   return e.x / 12;
+          // }).toList(),
           barWidth: 1,
           isStrokeCapRound: true,
           dotData: FlDotData(
