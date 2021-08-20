@@ -199,7 +199,7 @@ class MyBarChart extends StatelessWidget {
               fontWeight: FontWeight.bold,
               fontSize: 15,
             ),
-            interval: 50,
+            interval: 1000,
             getTitles: (value) {
               switch (value.toInt()) {
                 // case 0:
