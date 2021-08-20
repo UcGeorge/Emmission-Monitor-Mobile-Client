@@ -1,7 +1,9 @@
+import 'package:crunch_carbon/views/activity/activity.dart';
 import 'package:crunch_carbon/views/dashboard/widgets/widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/src/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:crunch_carbon/providers/DashboardProvider.dart';
@@ -117,7 +119,15 @@ class _DashboardState extends State<Dashboard> {
                             HomepageActivity(
                               imageAsset: 'images/My activities Icon.svg',
                               label: 'Activity',
-                              onTap: () {},
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  PageTransition(
+                                    type: PageTransitionType.fade,
+                                    child: ActivityPage(),
+                                  ),
+                                );
+                              },
                             ),
                           ],
                         ),

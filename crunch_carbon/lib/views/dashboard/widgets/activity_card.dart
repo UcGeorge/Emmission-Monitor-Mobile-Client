@@ -1,5 +1,8 @@
+import 'package:crunch_carbon/views/activity/activity.dart';
+import 'package:crunch_carbon/views/profile/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/src/provider.dart';
 import 'package:crunch_carbon/providers/DashboardProvider.dart';
 import 'package:crunch_carbon/widgets/wigets.dart';
@@ -34,7 +37,15 @@ class ActivityCard extends StatelessWidget {
                     textColor: Colors.white,
                     buttonColor: Colors.black,
                     buttonName: 'Activity Dashboard',
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        PageTransition(
+                          type: PageTransitionType.fade,
+                          child: ActivityPage(),
+                        ),
+                      );
+                    },
                     width: 135,
                     height: 38,
                   ),
