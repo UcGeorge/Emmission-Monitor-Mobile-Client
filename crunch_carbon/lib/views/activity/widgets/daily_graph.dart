@@ -114,7 +114,6 @@ class LineChartSample2 extends StatelessWidget {
         borderRadius: BorderRadius.all(
           Radius.circular(18),
         ),
-        // color: Color(0xff232d37),
       ),
       child: Padding(
         padding:
@@ -141,7 +140,6 @@ class LineChartSample2 extends StatelessWidget {
                   color: Colors.black,
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  // letterSpacing: 1.0,
                 ),
               ),
             ];
@@ -172,42 +170,9 @@ class LineChartSample2 extends StatelessWidget {
         show: true,
         drawVerticalLine: false,
         drawHorizontalLine: false,
-        // getDrawingHorizontalLine: (value) {
-        //   return FlLine(
-        //     color: const Color(0xff37434d),
-        //     strokeWidth: 1,
-        //   );
-        // },
-        // getDrawingVerticalLine: (value) {
-        //   return FlLine(
-        //     color: const Color(0xff37434d),
-        //     strokeWidth: 1,
-        //   );
-        // },
       ),
       titlesData: FlTitlesData(
         show: true,
-        // bottomTitles: SideTitles(
-        //   showTitles: true,
-        //   reservedSize: 22,
-        //   getTextStyles: (context, value) => const TextStyle(
-        //     color: Color(0xff68737d),
-        //     fontWeight: FontWeight.bold,
-        //     fontSize: 16,
-        //   ),
-        //   getTitles: (value) {
-        //     switch (value.toInt()) {
-        //       case 2:
-        //         return 'MAR';
-        //       case 5:
-        //         return 'JUN';
-        //       case 8:
-        //         return 'SEP';
-        //     }
-        //     return '';
-        //   },
-        //   margin: 8,
-        // ),
         leftTitles: SideTitles(
           showTitles: true,
           getTextStyles: (context, value) => const TextStyle(
@@ -215,18 +180,13 @@ class LineChartSample2 extends StatelessWidget {
             fontWeight: FontWeight.bold,
             fontSize: 15,
           ),
+          interval: 100,
           getTitles: (value) {
             switch (value.toInt()) {
-              // case 0:
-              //   return '0';
               case 100:
                 return '100';
-              // case 200:
-              //   return '200';
               case 300:
                 return '300';
-              // case 400:
-              //   return '400';
               case 500:
                 return '500';
             }
@@ -236,13 +196,6 @@ class LineChartSample2 extends StatelessWidget {
           margin: 20,
         ),
       ),
-      // borderData: FlBorderData(
-      //   show: true,
-      //   border: Border.all(
-      //     color: const Color(0xff37434d),
-      //     width: 1,
-      //   ),
-      // ),
       minX: 0,
       maxX: 12,
       minY: 0,
@@ -252,10 +205,6 @@ class LineChartSample2 extends StatelessWidget {
           spots: spots,
           isCurved: true,
           colors: lineColor,
-          // colorStops: spots.map((e) {
-          //   print(e.x / 12);
-          //   return e.x / 12;
-          // }).toList(),
           barWidth: 1,
           isStrokeCapRound: true,
           dotData: FlDotData(

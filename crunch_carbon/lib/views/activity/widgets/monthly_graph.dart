@@ -1,10 +1,30 @@
+import 'dart:io';
+
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:screenshot/screenshot.dart';
+import 'package:share/share.dart';
 
 class MonthlyGraph extends StatelessWidget {
-  const MonthlyGraph({
-    Key? key,
-  }) : super(key: key);
+  final _screenshotController = ScreenshotController();
+
+  void _takeScreenshot(BuildContext context) async {
+    double pixelRatio = MediaQuery.of(context).devicePixelRatio;
+    await _screenshotController
+        .capture(
+            pixelRatio: pixelRatio, delay: const Duration(milliseconds: 10))
+        .then((image) async {
+      if (image != null) {
+        final directory = await getApplicationDocumentsDirectory();
+        final imagePath =
+            await File('${directory.path}/Monthly summary.png').create();
+        await imagePath.writeAsBytes(image);
+        await Share.shareFiles([imagePath.path],
+            text: 'My Crunch Carbon Monthly Summary!');
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,71 +36,79 @@ class MonthlyGraph extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 20.0),
-                child: Text(
-                  '12300.23',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 29,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.5,
+          Screenshot(
+            controller: _screenshotController,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 20.0),
+                  child: Text(
+                    '12300.23',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 29,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.5,
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              Padding(
-                padding: const EdgeInsets.only(left: 20.0),
-                child: Text(
-                  'Monthly Usage',
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.65),
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.0,
+                const SizedBox(height: 8),
+                Padding(
+                  padding: const EdgeInsets.only(left: 20.0),
+                  child: Text(
+                    'Monthly Usage',
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.65),
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.0,
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 20),
-              Expanded(child: BarChartSample()),
-            ],
+                const SizedBox(height: 20),
+                Expanded(child: BarChartSample()),
+              ],
+            ),
           ),
           Align(
             alignment: Alignment.topRight,
-            child: Container(
-              height: 42,
-              width: 114,
-              margin: EdgeInsets.only(right: 20),
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              decoration: BoxDecoration(
-                color: Colors.transparent,
-                border: Border.all(
-                  color: Colors.white,
-                  width: 1,
-                ),
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Icon(
-                    Icons.share,
+            child: GestureDetector(
+              onTap: () {
+                _takeScreenshot(context);
+              },
+              child: Container(
+                height: 42,
+                width: 114,
+                margin: EdgeInsets.only(right: 20),
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  border: Border.all(
                     color: Colors.white,
-                    size: 20,
+                    width: 1,
                   ),
-                  Text(
-                    'Share',
-                    style: TextStyle(
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Icon(
+                      Icons.share,
                       color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.normal,
-                      // letterSpacing: 1.5,
+                      size: 20,
                     ),
-                  ),
-                ],
+                    Text(
+                      'Share',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.normal,
+                        // letterSpacing: 1.5,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -165,7 +193,6 @@ class MyBarChart extends StatelessWidget {
                   color: Colors.black,
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  // letterSpacing: 1.0,
                 ),
               );
             },
@@ -175,7 +202,6 @@ class MyBarChart extends StatelessWidget {
           show: true,
           drawHorizontalLine: true,
           horizontalInterval: 1000,
-          // checkToShowHorizontalLine: (value) => value == 480,
           getDrawingHorizontalLine: (value) {
             if (value == 5000) {
               return FlLine(
@@ -202,16 +228,10 @@ class MyBarChart extends StatelessWidget {
             interval: 1000,
             getTitles: (value) {
               switch (value.toInt()) {
-                // case 0:
-                //   return '0';
                 case 3000:
                   return '3000';
-                // case 200:
-                //   return '200';
                 case 6000:
                   return '6000';
-                // case 400:
-                //   return '400';
                 case 9000:
                   return '9000';
               }
@@ -274,7 +294,6 @@ class MyBarChart extends StatelessWidget {
                       ],
                     )
                   ],
-                  // showingTooltipIndicators: [0],
                 ))
             .toList(),
       ),

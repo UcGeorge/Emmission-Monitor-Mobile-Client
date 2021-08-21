@@ -1,10 +1,30 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:screenshot/screenshot.dart';
+import 'package:share/share.dart';
 
 class WeeklyGraph extends StatelessWidget {
-  const WeeklyGraph({
-    Key? key,
-  }) : super(key: key);
+  final _screenshotController = ScreenshotController();
+
+  void _takeScreenshot(BuildContext context) async {
+    double pixelRatio = MediaQuery.of(context).devicePixelRatio;
+    await _screenshotController
+        .capture(
+            pixelRatio: pixelRatio, delay: const Duration(milliseconds: 10))
+        .then((image) async {
+      if (image != null) {
+        final directory = await getApplicationDocumentsDirectory();
+        final imagePath =
+            await File('${directory.path}/Weekly summary.png').create();
+        await imagePath.writeAsBytes(image);
+        await Share.shareFiles([imagePath.path],
+            text: 'My Crunch Carbon Weekly Summary!');
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,71 +36,78 @@ class WeeklyGraph extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 20.0),
-                child: Text(
-                  '1230.23',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 29,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.5,
+          Screenshot(
+            controller: _screenshotController,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 20.0),
+                  child: Text(
+                    '1230.23',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 29,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.5,
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              Padding(
-                padding: const EdgeInsets.only(left: 20.0),
-                child: Text(
-                  'Weekly Usage',
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.65),
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.0,
+                const SizedBox(height: 8),
+                Padding(
+                  padding: const EdgeInsets.only(left: 20.0),
+                  child: Text(
+                    'Weekly Usage',
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.65),
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.0,
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 20),
-              Expanded(child: BarChartSample3()),
-            ],
+                const SizedBox(height: 20),
+                Expanded(child: BarChartSample3()),
+              ],
+            ),
           ),
           Align(
             alignment: Alignment.topRight,
-            child: Container(
-              height: 42,
-              width: 114,
-              margin: EdgeInsets.only(right: 20),
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              decoration: BoxDecoration(
-                color: Colors.transparent,
-                border: Border.all(
-                  color: Colors.white,
-                  width: 1,
-                ),
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Icon(
-                    Icons.share,
+            child: GestureDetector(
+              onTap: () {
+                _takeScreenshot(context);
+              },
+              child: Container(
+                height: 42,
+                width: 114,
+                margin: EdgeInsets.only(right: 20),
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  border: Border.all(
                     color: Colors.white,
-                    size: 20,
+                    width: 1,
                   ),
-                  Text(
-                    'Share',
-                    style: TextStyle(
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Icon(
+                      Icons.share,
                       color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.normal,
-                      // letterSpacing: 1.5,
+                      size: 20,
                     ),
-                  ),
-                ],
+                    Text(
+                      'Share',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -105,7 +132,6 @@ class BarChartSample3State extends State<BarChartSample3> {
         borderRadius: BorderRadius.all(
           Radius.circular(18),
         ),
-        // color: Color(0xff232d37),
       ),
       child: Padding(
         padding: const EdgeInsets.only(right: 20.0, left: 12),
@@ -152,7 +178,6 @@ class TheBarChart extends StatelessWidget {
                   color: Colors.black,
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  // letterSpacing: 1.0,
                 ),
               );
             },
@@ -162,7 +187,6 @@ class TheBarChart extends StatelessWidget {
           show: true,
           drawHorizontalLine: true,
           horizontalInterval: 20,
-          // checkToShowHorizontalLine: (value) => value == 480,
           getDrawingHorizontalLine: (value) {
             if (value == 480) {
               return FlLine(
@@ -189,16 +213,10 @@ class TheBarChart extends StatelessWidget {
             interval: 50,
             getTitles: (value) {
               switch (value.toInt()) {
-                // case 0:
-                //   return '0';
                 case 250:
                   return '250';
-                // case 200:
-                //   return '200';
                 case 500:
                   return '500';
-                // case 400:
-                //   return '400';
                 case 750:
                   return '750';
               }
@@ -250,7 +268,6 @@ class TheBarChart extends StatelessWidget {
                       ],
                     )
                   ],
-                  // showingTooltipIndicators: [0],
                 ))
             .toList(),
       ),
