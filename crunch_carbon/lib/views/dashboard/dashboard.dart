@@ -1,5 +1,6 @@
 import 'package:crunch_carbon/views/activity/activity.dart';
 import 'package:crunch_carbon/views/dashboard/widgets/widgets.dart';
+import 'package:crunch_carbon/views/session/session.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -111,7 +112,15 @@ class _DashboardState extends State<Dashboard> {
                             HomepageActivity(
                               imageAsset: 'images/steering-wheel.svg',
                               label: 'Start a Trip',
-                              onTap: () {},
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  PageTransition(
+                                    type: PageTransitionType.fade,
+                                    child: SessionPage(),
+                                  ),
+                                );
+                              },
                             ),
                             SizedBox(
                               width: 42,

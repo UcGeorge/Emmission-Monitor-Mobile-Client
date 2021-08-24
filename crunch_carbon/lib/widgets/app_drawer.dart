@@ -1,4 +1,5 @@
 import 'package:crunch_carbon/views/activity/activity.dart';
+import 'package:crunch_carbon/views/session/session.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:page_transition/page_transition.dart';
@@ -151,6 +152,16 @@ class MenuRoutes extends StatelessWidget {
             thickness: .5,
           ),
           ListTile(
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                PageTransition(
+                  type: PageTransitionType.fade,
+                  child: SessionPage(),
+                ),
+              );
+            },
             leading: CircleAvatar(
               radius: 19,
               backgroundColor: Colors.white,
