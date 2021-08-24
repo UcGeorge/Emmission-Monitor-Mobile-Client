@@ -1,3 +1,4 @@
+import 'package:crunch_carbon/views/activity/activity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
@@ -57,33 +58,45 @@ class ProfileView extends StatelessWidget {
                               letterSpacing: 1.5,
                             ),
                           ),
-                          Container(
-                            padding: EdgeInsets.all(12),
-                            // width: 135,
-                            // height: 34,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(100),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                SvgPicture.asset(
-                                  'images/My activities Icon.svg',
-                                  height: 17.46,
-                                  color: Colors.black,
-                                  semanticsLabel: 'My activities Icon',
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                PageTransition(
+                                  type: PageTransitionType.fade,
+                                  child: ActivityPage(),
                                 ),
-                                SizedBox(width: 20.5),
-                                Text(
-                                  'My Activities',
-                                  style: TextStyle(
-                                    overflow: TextOverflow.fade,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
+                              );
+                            },
+                            child: Container(
+                              padding: EdgeInsets.all(12),
+                              // width: 135,
+                              // height: 34,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(100),
+                              ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  SvgPicture.asset(
+                                    'images/My activities Icon.svg',
+                                    height: 17.46,
+                                    color: Colors.black,
+                                    semanticsLabel: 'My activities Icon',
                                   ),
-                                ),
-                              ],
+                                  SizedBox(width: 20.5),
+                                  Text(
+                                    'My Activities',
+                                    style: TextStyle(
+                                      overflow: TextOverflow.fade,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           )
                         ],
