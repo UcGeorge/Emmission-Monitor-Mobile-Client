@@ -41,5 +41,9 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app requires access to your location to calculate your carbon footprint.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>This app requires access to your location to calculate your carbon footprint.</string>
 </dict>
 </plist>
