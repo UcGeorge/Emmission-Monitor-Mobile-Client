@@ -15,7 +15,6 @@ class SessionProvider extends ChangeNotifier {
   UserLocation? currentLocation;
   double calculatedDistance = 0;
   int countKeeper = 0;
-  String? errorMessage;
 
   SessionProvider() : this.locationService = LocationService();
 
@@ -34,7 +33,6 @@ class SessionProvider extends ChangeNotifier {
         distanceTravelled = 0;
         currentLocation = await locationService.getLocation(
           onError: (errorMessage) {
-            this.errorMessage = errorMessage;
             print(errorMessage);
             endTrip();
           },
@@ -43,14 +41,11 @@ class SessionProvider extends ChangeNotifier {
       } else {
         currentLocation = await locationService.getLocation(
           onError: (errorMessage) {
-            this.errorMessage = errorMessage;
             print(errorMessage);
+            endTrip();
           },
         );
-        if (currentLocation == null) {
-          distanceTravelled = 0;
-          endTrip();
-        } else {
+        if (currentLocation != null) {
           calculatedDistance = Geolocator.distanceBetween(
             lastLocation!.latitude,
             lastLocation!.longitude,
@@ -77,7 +72,6 @@ class SessionProvider extends ChangeNotifier {
     currentLocation = null;
     calculatedDistance = 0;
     countKeeper = 0;
-    errorMessage = null;
     notifyListeners();
   }
 }

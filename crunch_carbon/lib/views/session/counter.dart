@@ -44,8 +44,6 @@ class _CounterState extends State<Counter> {
             Text(
                 'Calculated Distance: ${context.watch<SessionProvider>().calculatedDistance}'),
             Text(
-                'Error: ${context.watch<SessionProvider>().errorMessage ?? 'No error.'}'),
-            Text(
                 'Calculated ${context.watch<SessionProvider>().countKeeper} times.'),
             Padding(
               padding: const EdgeInsets.all(20.0),
