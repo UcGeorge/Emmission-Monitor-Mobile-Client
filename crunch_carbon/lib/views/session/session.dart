@@ -1,4 +1,5 @@
 import 'package:crunch_carbon/providers/SessionProvider.dart';
+import 'package:crunch_carbon/views/session/counter.dart';
 import 'package:crunch_carbon/widgets/wigets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -57,13 +58,13 @@ class _SessionPageState extends State<SessionPage> {
           .read<SessionProvider>()
           .initialize(fuelOption!, vehicleType!, plateNo!);
       if (await context.read<SessionProvider>().locationService.allIsWell()) {
-        // Navigator.push(
-        //   context,
-        //   PageTransition(
-        //     type: PageTransitionType.rightToLeft,
-        //     child: Dashboard(),
-        //   ),
-        // );
+        Navigator.push(
+          context,
+          PageTransition(
+            type: PageTransitionType.rightToLeft,
+            child: Counter(),
+          ),
+        );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
       }

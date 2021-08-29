@@ -1,13 +1,21 @@
 import 'package:flutter/cupertino.dart';
 import 'package:location/location.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:geolocator_platform_interface/src/enums/location_accuracy.dart'
+    as Location_accutacy;
 
 class SessionProvider extends ChangeNotifier {
   String? fuelOption;
   String? vehicleType;
   String? plateNo;
   LocationService locationService;
-  double? distanceTravelled;
+  double distanceTravelled = 0;
   bool isInTransit = false;
+  UserLocation? lastLocation;
+  UserLocation? currentLocation;
+  double calculatedDistance = 0;
+  int countKeeper = 0;
+  String? errorMessage;
 
   SessionProvider() : this.locationService = LocationService();
 
@@ -19,21 +27,68 @@ class SessionProvider extends ChangeNotifier {
 
   void startTrip() async {
     isInTransit = true;
+    notifyListeners();
+    while (isInTransit) {
+      countKeeper++;
+      if (lastLocation == null) {
+        distanceTravelled = 0;
+        currentLocation = await locationService.getLocation(
+          onError: (errorMessage) {
+            this.errorMessage = errorMessage;
+            print(errorMessage);
+            isInTransit = false;
+          },
+        );
+        lastLocation = currentLocation;
+      } else {
+        currentLocation = await locationService.getLocation(
+          onError: (errorMessage) {
+            this.errorMessage = errorMessage;
+            print(errorMessage);
+          },
+        );
+        if (currentLocation == null) {
+          distanceTravelled = 0;
+          isInTransit = false;
+        } else {
+          calculatedDistance = Geolocator.distanceBetween(
+            lastLocation!.latitude,
+            lastLocation!.longitude,
+            currentLocation!.latitude,
+            currentLocation!.longitude,
+          );
+          distanceTravelled += calculatedDistance;
+        }
+      }
+      notifyListeners();
+      Future.delayed(Duration(seconds: 5));
+    }
   }
 
-  void endTrip() {
+  void endTrip() async {
+    Future.delayed(Duration(seconds: 5));
+    fuelOption = null;
+    vehicleType = null;
+    plateNo = null;
+    locationService;
+    distanceTravelled = 0;
     isInTransit = false;
+    lastLocation = null;
+    currentLocation = null;
+    calculatedDistance = 0;
+    countKeeper = 0;
+    errorMessage = null;
+    notifyListeners();
   }
 }
 
 class LocationService {
-  late UserLocation _currentLocation;
-
   LocationService() {
     _checkPermissions();
   }
 
   Future<bool> _checkPermissions() async {
+    var location = Location();
     print('Checking permissions and services');
     bool _serviceEnabled;
     PermissionStatus _permissionGranted;
@@ -65,24 +120,25 @@ class LocationService {
     return true;
   }
 
-  var location = Location();
-
   Future<bool> allIsWell() async => await _checkPermissions();
 
-  Future<UserLocation?> getLocation() async {
+  Future<UserLocation?> getLocation(
+      {required void onError(String errorMessage)}) async {
     if (await _checkPermissions()) {
       try {
-        var userLocation = await location.getLocation();
-        _currentLocation = UserLocation(
-          latitude: userLocation.latitude ?? 0,
-          longitude: userLocation.longitude ?? 0,
+        Position userLocation = await Geolocator.getCurrentPosition(
+            desiredAccuracy:
+                Location_accutacy.LocationAccuracy.bestForNavigation);
+        return UserLocation(
+          latitude: userLocation.latitude,
+          longitude: userLocation.longitude,
         );
       } on Exception catch (e) {
-        print('Could not get location: ${e.toString()}');
+        onError('Could not get location: ${e.toString()}');
+        return null;
       }
-
-      return _currentLocation;
     }
+    onError('Insufficent privileges.');
     return null;
   }
 }
