@@ -30,7 +30,6 @@ class SessionProvider extends ChangeNotifier {
     while (isInTransit) {
       countKeeper++;
       if (lastLocation == null) {
-        distanceTravelled = 0;
         currentLocation = await locationService.getLocation(
           onError: (errorMessage) {
             print(errorMessage);
