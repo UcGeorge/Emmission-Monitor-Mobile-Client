@@ -36,7 +36,7 @@ class SessionProvider extends ChangeNotifier {
           onError: (errorMessage) {
             this.errorMessage = errorMessage;
             print(errorMessage);
-            isInTransit = false;
+            endTrip();
           },
         );
         lastLocation = currentLocation;
@@ -49,7 +49,7 @@ class SessionProvider extends ChangeNotifier {
         );
         if (currentLocation == null) {
           distanceTravelled = 0;
-          isInTransit = false;
+          endTrip();
         } else {
           calculatedDistance = Geolocator.distanceBetween(
             lastLocation!.latitude,
