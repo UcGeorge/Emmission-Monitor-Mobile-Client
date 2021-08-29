@@ -61,12 +61,12 @@ class SessionProvider extends ChangeNotifier {
         }
       }
       notifyListeners();
-      Future.delayed(Duration(seconds: 5));
+      await Future.delayed(Duration(seconds: 5));
     }
   }
 
   void endTrip() async {
-    Future.delayed(Duration(seconds: 5));
+    await Future.delayed(Duration(seconds: 5));
     fuelOption = null;
     vehicleType = null;
     plateNo = null;
