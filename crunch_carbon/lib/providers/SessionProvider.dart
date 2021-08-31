@@ -52,9 +52,10 @@ class SessionProvider extends ChangeNotifier {
             currentLocation!.longitude,
           );
           distanceTravelled += calculatedDistance;
+          lastLocation = currentLocation;
+          notifyListeners();
         }
       }
-      notifyListeners();
       await Future.delayed(Duration(seconds: 5));
     }
   }
