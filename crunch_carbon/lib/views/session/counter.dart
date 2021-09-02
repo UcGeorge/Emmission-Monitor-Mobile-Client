@@ -27,6 +27,9 @@ class _CounterState extends State<Counter> {
         context.watch<SessionProvider>().currentLocation;
 
     if (!isInTransit) {
+      setState(() {
+        loading = false;
+      });
       Navigator.pop(context);
     }
 
@@ -49,6 +52,9 @@ class _CounterState extends State<Counter> {
               padding: const EdgeInsets.all(20.0),
               child: TextButton(
                 onPressed: () {
+                  setState(() {
+                    loading = true;
+                  });
                   context.read<SessionProvider>().endTrip();
                 },
                 child: Center(

@@ -37,6 +37,7 @@ class SessionProvider extends ChangeNotifier {
           },
         );
         lastLocation = currentLocation;
+        notifyListeners();
       } else {
         currentLocation = await locationService.getLocation(
           onError: (errorMessage) {
