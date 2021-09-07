@@ -1,3 +1,5 @@
+import 'package:crunch_carbon/models/fuel.dart';
+import 'package:crunch_carbon/providers/DashboardProvider.dart';
 import 'package:crunch_carbon/providers/SessionProvider.dart';
 import 'package:crunch_carbon/views/session/counter.dart';
 import 'package:crunch_carbon/widgets/wigets.dart';
@@ -6,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SessionPage extends StatefulWidget {
   @override
@@ -13,11 +16,13 @@ class SessionPage extends StatefulWidget {
 }
 
 class _SessionPageState extends State<SessionPage> {
+  late Map<String, Fuel> fuelOptions;
   String? fuelOption;
   String? vehicleType;
   String? plateNo;
   String? plateNoError;
   bool loading = false;
+  bool initializing = true;
 
   SnackBar snackBar = const SnackBar(
     backgroundColor: Colors.red,
@@ -30,9 +35,25 @@ class _SessionPageState extends State<SessionPage> {
     ),
   );
 
+  void initData() async {
+    final prefs = await SharedPreferences.getInstance();
+    var token = prefs.getString('token');
+    var username = prefs.getString('username');
+    var fuels = await context.read<SessionProvider>().getFuel(token ?? 'undefined', username ?? 'undefined');
+    fuelOptions = Map.fromIterable(
+        fuels,
+        key: (v) => (v as Fuel).name,
+        value: (v) => v as Fuel,
+    );
+    setState(() {
+      initializing = false;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
+    initData();
   }
 
   bool _checkValid() {
@@ -62,7 +83,7 @@ class _SessionPageState extends State<SessionPage> {
           context,
           PageTransition(
             type: PageTransitionType.rightToLeft,
-            child: Counter(),
+            child: Counter(fuel: fuelOptions[fuelOption]!,),
           ),
         );
       } else {
@@ -125,7 +146,14 @@ class _SessionPageState extends State<SessionPage> {
                   elevation: 0,
                   // color: Colors.blue,
                   margin: EdgeInsets.only(),
-                  child: ListView(
+                  child: initializing
+                      ? Center(
+                        child: const SpinKitFadingCircle(
+                    color: Colors.black,
+                    size: 50.0,
+                  ),
+                      )
+                      : ListView(
                     children: [
                       Column(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -188,7 +216,7 @@ class _SessionPageState extends State<SessionPage> {
       children: [
         ReuseableSelectField(
           fieldName: 'Fuel Option',
-          options: ['Petrol', 'Diesel'],
+          options: fuelOptions.keys.toList(),
           onSelectChanged: (value) {
             fuelOption = value;
           },
