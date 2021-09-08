@@ -1,12 +1,37 @@
 import 'dart:io';
 
+import 'package:crunch_carbon/models/session.dart';
+import 'package:crunch_carbon/providers/ActivityProvider.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:provider/src/provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share/share.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class MonthlyGraph extends StatelessWidget {
+class MonthlyGraph extends StatefulWidget {
+  @override
+  State<MonthlyGraph> createState() => _MonthlyGraphState();
+}
+
+class _MonthlyGraphState extends State<MonthlyGraph> {
+  List<Session> sessionList = [];
+  bool loading = true;
+
+  void _initData() async {
+    final prefs = await SharedPreferences.getInstance();
+    var token = prefs.getString('token');
+    var username = prefs.getString('username');
+    sessionList = await context.read<ActivityProvider>().getSessions(token ?? 'undefined', username ?? 'undefined');
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _initData();
+  }
+
   final _screenshotController = ScreenshotController();
 
   void _takeScreenshot(BuildContext context) async {
@@ -28,92 +53,85 @@ class MonthlyGraph extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 40),
-      decoration: BoxDecoration(
-        color: Colors.black,
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: Stack(
-        children: [
-          Screenshot(
-            controller: _screenshotController,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 20.0),
-                  child: Text(
-                    '12300.23',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 29,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.5,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Padding(
-                  padding: const EdgeInsets.only(left: 20.0),
-                  child: Text(
-                    'Monthly Usage',
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.65),
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.0,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Expanded(child: BarChartSample()),
-              ],
-            ),
-          ),
-          Align(
-            alignment: Alignment.topRight,
-            child: GestureDetector(
-              onTap: () {
-                _takeScreenshot(context);
-              },
-              child: Container(
-                height: 42,
-                width: 114,
-                margin: EdgeInsets.only(right: 20),
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                decoration: BoxDecoration(
-                  color: Colors.transparent,
-                  border: Border.all(
+    return Stack(
+      children: [
+        Screenshot(
+          controller: _screenshotController,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 20.0),
+                child: Text(
+                  '12300.23',
+                  style: TextStyle(
                     color: Colors.white,
-                    width: 1,
+                    fontSize: 29,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.5,
                   ),
-                  borderRadius: BorderRadius.circular(6),
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Icon(
-                      Icons.share,
+              ),
+              const SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.only(left: 20.0),
+                child: Text(
+                  'Monthly Usage',
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.65),
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.0,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Expanded(child: BarChartSample()),
+            ],
+          ),
+        ),
+        Align(
+          alignment: Alignment.topRight,
+          child: GestureDetector(
+            onTap: () {
+              _takeScreenshot(context);
+            },
+            child: Container(
+              height: 42,
+              width: 114,
+              margin: EdgeInsets.only(right: 20),
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(
+                color: Colors.transparent,
+                border: Border.all(
+                  color: Colors.white,
+                  width: 1,
+                ),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Icon(
+                    Icons.share,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+                  Text(
+                    'Share',
+                    style: TextStyle(
                       color: Colors.white,
-                      size: 20,
+                      fontSize: 20,
+                      fontWeight: FontWeight.normal,
+                      // letterSpacing: 1.5,
                     ),
-                    Text(
-                      'Share',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.normal,
-                        // letterSpacing: 1.5,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

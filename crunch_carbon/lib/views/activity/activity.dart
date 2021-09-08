@@ -1,7 +1,9 @@
+import 'package:crunch_carbon/providers/ActivityProvider.dart';
 import 'package:crunch_carbon/views/activity/widgets/widgets.dart';
 import 'package:crunch_carbon/widgets/wigets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/src/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -16,6 +18,7 @@ class ActivityPage extends StatefulWidget {
 
 class _ActivityPageState extends State<ActivityPage> {
   String selectedMode = 'daily';
+  bool loading = true;
 
   Future<bool> onWillPop(BuildContext context) {
     Navigator.push(
@@ -28,28 +31,32 @@ class _ActivityPageState extends State<ActivityPage> {
     return Future.value(true);
   }
 
-  void initData() async {
+  void _initData() async {
     final prefs = await SharedPreferences.getInstance();
     var token = prefs.getString('token');
     var username = prefs.getString('username');
-    context
-        .read<DashboardProvider>()
-        .getSessions(token ?? 'undefined', username ?? 'undefined');
+    await context.read<ActivityProvider>().refreshSessions(token ?? 'undefined', username ?? 'undefined');
+    setState(() {
+      loading = false;
+    });
   }
 
   @override
   void initState() {
     super.initState();
-    initData();
+    _initData();
   }
 
   Widget Graph() {
     switch (selectedMode) {
       case 'daily':
+        print('Returning daily');
         return DailyGraph();
       case 'weekly':
+        print('Returning weekly');
         return WeeklyGraph();
       case 'monthly':
+        print('Returning monthly');
         return MonthlyGraph();
       default:
         return Container();
@@ -279,7 +286,19 @@ class _ActivityPageState extends State<ActivityPage> {
                   child: Card(
                     elevation: 0,
                     margin: EdgeInsets.only(),
-                    child: Graph(),
+                    child: Container(
+                        padding: EdgeInsets.only(top: 40, bottom:  20),
+                        decoration: BoxDecoration(
+                          color: Colors.black,
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: loading
+                            ? const SpinKitFadingCircle(
+                          color: Colors.white,
+                          size: 40.0,
+                        )
+                            : Graph()
+                    ),
                   ),
                 ),
               ),
