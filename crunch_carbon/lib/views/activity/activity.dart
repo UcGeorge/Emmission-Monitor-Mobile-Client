@@ -1,3 +1,4 @@
+import 'package:crunch_carbon/models/session.dart';
 import 'package:crunch_carbon/providers/ActivityProvider.dart';
 import 'package:crunch_carbon/views/activity/widgets/widgets.dart';
 import 'package:crunch_carbon/widgets/wigets.dart';
@@ -18,6 +19,8 @@ class ActivityPage extends StatefulWidget {
 
 class _ActivityPageState extends State<ActivityPage> {
   String selectedMode = 'daily';
+  double percent = 0;
+  bool isUp = false;
   bool loading = true;
 
   Future<bool> onWillPop(BuildContext context) {
@@ -31,12 +34,40 @@ class _ActivityPageState extends State<ActivityPage> {
     return Future.value(true);
   }
 
+  bool isToday(Session e){
+    DateTime today = DateTime.now();
+    return (e.dateCreated.year == today.year)
+        && (e.dateCreated.month == today.month)
+        && (e.dateCreated.day == today.day);
+  }
+
+  bool isYesterday(Session e){
+    DateTime today = DateTime.now().subtract(Duration(days: 1));
+    return (e.dateCreated.year == today.year)
+        && (e.dateCreated.month == today.month)
+        && (e.dateCreated.day == today.day);
+  }
+
   void _initData() async {
     final prefs = await SharedPreferences.getInstance();
     var token = prefs.getString('token');
     var username = prefs.getString('username');
     await context.read<ActivityProvider>().refreshSessions(token ?? 'undefined', username ?? 'undefined');
+
+    var sessions = await context.read<ActivityProvider>().getSessions(token ?? 'undefined', username ?? 'undefined');
+    double todaySum = 0;
+    sessions.where((e) => isToday(e)).map((e) => e.emissionQuantity).forEach((num e){todaySum += e.toDouble();});
+    double yesterdaySum = 0;
+    sessions.where((e) => isYesterday(e)).map((e) => e.emissionQuantity).forEach((num e){yesterdaySum += e.toDouble();});
+
     setState(() {
+      if(todaySum > yesterdaySum){
+        isUp = true;
+        percent = ((todaySum - yesterdaySum)/yesterdaySum)*100;
+      }else{
+        isUp = false;
+        percent = ((yesterdaySum - todaySum)/yesterdaySum)*100;
+      }
       loading = false;
     });
   }
@@ -108,12 +139,23 @@ class _ActivityPageState extends State<ActivityPage> {
                           context,
                           buttonColor: Colors.white,
                           onPressed: () {},
-                          width: 77,
+                          width: loading ? 34 : 77,
                           height: 34,
-                          child: Row(
+                          child: loading
+                              ? const SpinKitFadingCircle(
+                            color: Colors.black,
+                            size: 15.0,
+                          )
+                              : Row(
                             children: [
                               Spacer(),
-                              Icon(
+                              isUp
+                                  ? Icon(
+                                Icons.arrow_drop_up_sharp,
+                                color: Colors.black,
+                                size: 24,
+                              )
+                                  : Icon(
                                 Icons.arrow_drop_down_sharp,
                                 color: Colors.black,
                                 size: 24,
@@ -125,7 +167,7 @@ class _ActivityPageState extends State<ActivityPage> {
                                           .watch<DashboardProvider>()
                                           .percentC
                                           ?.toString() ??
-                                      '0',
+                                      percent.toStringAsFixed(0),
                                   style: TextStyle(
                                     color: Colors.black,
                                     fontSize: 13,
