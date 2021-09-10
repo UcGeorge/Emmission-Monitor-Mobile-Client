@@ -22,30 +22,59 @@ class _DailyGraphState extends State<DailyGraph> {
     final prefs = await SharedPreferences.getInstance();
     var token = prefs.getString('token');
     var username = prefs.getString('username');
-    sessionList = await context.read<ActivityProvider>().getSessions(token ?? 'undefined', username ?? 'undefined');
-    setState(() {
-      loading=false;
+    sessionList = (await context.read<ActivityProvider>().getSessions(token ?? 'undefined', username ?? 'undefined')).where((e) => isToday(e)).toList();
+    Future.delayed(Duration(milliseconds: 500), (){
+      setState(() {
+        loading = false;
+      });
     });
+    // print('There were ${sessionList.length} sessions today');
   }
 
-  List<FlSpot> getSpots(List<Session> sessions){
+  List<FlSpot> dailySpots(List<Session> sessions){
     List<FlSpot> theSpots = [];
     for(int i = 0; i<=DateTime.now().hour; i++){
-      theSpots.add(FlSpot(i.toDouble(), sessions.where((e) => e.dateCreated.hour == i).map((e) => e.emissionQuantity).fold(0, (p, c) => p ?? 0 + c) ?? 0));
+      double totalEmission = 0;
+
+      sessions
+          .where((e) => e.dateCreated.hour == i)
+          .map((e) => e.emissionQuantity)
+          .forEach((num e){totalEmission += e.toDouble();});
+
+      theSpots.add(FlSpot(i.toDouble(), totalEmission));
     }
+    // print('Spots: \n${theSpots}');
     return theSpots;
   }
 
   double _totalCarbonUsed(){
     double sum = 0;
-    DateTime today = DateTime.now();
-    sessionList
-        .where(
-            (e) => (e.dateCreated.year == today.year)
-                && (e.dateCreated.month == today.month)
-                && (e.dateCreated.day == today.day)
-    ).map((e) => e.emissionQuantity).forEach((double e){sum += e;});
+    sessionList.where((e) => isToday(e)).map((e) => e.emissionQuantity).forEach((num e){sum += e.toDouble();});
     return sum;
+  }
+
+  bool isToday(Session e){
+    DateTime today = DateTime.now();
+    return (e.dateCreated.year == today.year)
+        && (e.dateCreated.month == today.month)
+        && (e.dateCreated.day == today.day);
+  }
+
+  double maxY(){
+    List<double> yS = [];
+    for(int i = 0; i<=DateTime.now().hour; i++){
+      double totalEmission = 0;
+
+      sessionList
+          .where((e) => e.dateCreated.hour == i)
+          .map((e) => e.emissionQuantity)
+          .forEach((num e){totalEmission += e.toDouble();});
+
+      yS.add(totalEmission);
+    }
+    yS.sort();
+    double maxSpot = yS.last;
+    return maxSpot >= 500 ? maxSpot : 500;
   }
 
   @override
@@ -74,7 +103,7 @@ class _DailyGraphState extends State<DailyGraph> {
         Padding(
           padding: const EdgeInsets.only(left: 20.0),
           child: Text(
-            _totalCarbonUsed().toString(),
+            _totalCarbonUsed().toStringAsFixed(2),
             style: TextStyle(
               color: Colors.white,
               fontSize: 28,
@@ -99,7 +128,8 @@ class _DailyGraphState extends State<DailyGraph> {
         const SizedBox(height: 20),
         Expanded(
           child: LineChartSample2(
-            spots: getSpots(sessionList),
+            spots: dailySpots(loading ? [] : sessionList),
+            maxY: maxY(),
           ),
         ),
       ],
@@ -109,17 +139,16 @@ class _DailyGraphState extends State<DailyGraph> {
 
 class LineChartSample2 extends StatelessWidget {
   final bool showAvg;
-  final double interval = 100;
   final double maxX = DateTime.now().hour.toDouble();
-  final double maxY = 500;
+  final double maxY;
+  final double interval;
   String getTiles(value) {
-    switch (value.toInt()) {
-      case 100:
-        return '100';
-      case 300:
-        return '300';
-      case 500:
-        return '500';
+    if(double.parse(value.toString()).toStringAsFixed(0) == ((30/100)*maxY).toStringAsFixed(0)
+        || double.parse(value.toString()).toStringAsFixed(0) == ((60/100)*maxY).toStringAsFixed(0)
+        || double.parse(value.toString()).toStringAsFixed(0) == ((90/100)*maxY).toStringAsFixed(0))
+    {
+      // print(value);
+      return value.toStringAsFixed(0);
     }
     return '';
   }
@@ -136,7 +165,7 @@ class LineChartSample2 extends StatelessWidget {
   ];
 
 
-  LineChartSample2({this.showAvg = false, required this.spots});
+  LineChartSample2({this.showAvg = false, required this.spots, required this.maxY}): interval = (5/100)*maxY;
 
   @override
   Widget build(BuildContext context) {
@@ -212,6 +241,18 @@ class LineChartSample2 extends StatelessWidget {
             color: Color(0xff67727d),
             fontWeight: FontWeight.bold,
             fontSize: 15,
+          ),
+          interval: interval,
+          getTitles: getTiles,
+          reservedSize: 28,
+          margin: 20,
+        ),
+        bottomTitles: SideTitles(
+          showTitles: true,
+          getTextStyles: (context, value) => const TextStyle(
+            color: Colors.transparent,
+            fontWeight: FontWeight.bold,
+            fontSize: 1,
           ),
           interval: interval,
           getTitles: getTiles,

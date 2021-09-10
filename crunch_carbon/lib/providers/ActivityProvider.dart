@@ -10,10 +10,10 @@ class ActivityProvider extends ChangeNotifier {
 
   Future<List<Session>> getSessions(String token, String username) async {
     if(sessionList.isNotEmpty){
-      print('Session list length: ${sessionList.length}');
+      // print('Session list length: ${sessionList.length}');
       return sessionList;
     }else{
-      print('sessionList is empty');
+      // print('sessionList is empty');
       await refreshSessions(token, username);
       return sessionList;
     }
@@ -21,7 +21,7 @@ class ActivityProvider extends ChangeNotifier {
 
   Future<void> refreshSessions(String token, String username) async {
     try {
-      print('Getting sessions');
+      // print('Getting sessions');
       var headers = {'Content-Type': 'application/x-www-form-urlencoded'};
       var request = http.Request(
         'GET',
@@ -30,27 +30,24 @@ class ActivityProvider extends ChangeNotifier {
       request.bodyFields = {'token': token, 'username': username};
       request.headers.addAll(headers);
 
-      print('Sending request');
+      // print('Sending request');
       http.StreamedResponse response = await request.send();
       String responseBody = await response.stream.bytesToString();
 
-      print('Got response');
+      // print('Got response');
 
       if (response.statusCode == 200) {
-        print(responseBody);
+        // print(responseBody);
         try {
           sessionList = _parseData(await jsonDecode(responseBody));
         } catch (e) {
           print('Json parse error: $e');
-          // sessionList = [];
         }
       } else {
         print(responseBody);
-        // sessionList = [];
       }
     } catch (e) {
       print(e);
-      // sessionList = [];
     }
   }
 
@@ -60,12 +57,12 @@ class ActivityProvider extends ChangeNotifier {
 
     List<Session> sessionList = (jsonBody['sessions'] as List).map((e) => Session(
       fuelList.where((element) => element.id == e['fuel_ID']).first,
-      (e['distance'] as int).toDouble(),
-      emissionQuantity: (e['emission_quantity'] as int).toDouble(),
+      e['distance'],
+      emissionQuantity: e['emission_quantity'],
       dateCreated: DateTime.parse(e['dateadded']),
     )).toList();
 
-    print('Session list length: ${sessionList.length}');
+    // print('Session list length: ${sessionList.length}');
     return sessionList;
   }
 }

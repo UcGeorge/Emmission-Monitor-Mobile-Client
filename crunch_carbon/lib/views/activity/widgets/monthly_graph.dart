@@ -23,7 +23,57 @@ class _MonthlyGraphState extends State<MonthlyGraph> {
     final prefs = await SharedPreferences.getInstance();
     var token = prefs.getString('token');
     var username = prefs.getString('username');
-    sessionList = await context.read<ActivityProvider>().getSessions(token ?? 'undefined', username ?? 'undefined');
+    sessionList = (await context.read<ActivityProvider>().getSessions(token ?? 'undefined', username ?? 'undefined')).where((e) => isThisYear(e)).toList();
+    Future.delayed(Duration(milliseconds: 500), (){
+      setState(() {
+        loading = false;
+      });
+    });
+    // print('There were ${sessionList.length} sessions this year');
+  }
+
+  bool isThisYear(Session e){
+    return e.dateCreated.year == DateTime.now().year;
+  }
+
+  List<double> monthlySpots(List<Session> sessions){
+    List<double> theSpots = [];
+
+    for(int i = 1; i<=DateTime.monthsPerYear; i++){
+      double totalEmission = 0;
+
+      sessions
+          .where((e) => e.dateCreated.month == i)
+          .map((e) => e.emissionQuantity)
+          .forEach((num e){totalEmission += e.toDouble();});
+
+      theSpots.add(totalEmission);
+    }
+    // print('Spots: \n${theSpots}');
+    return theSpots;
+  }
+
+  double maxY(){
+    List<double> yS = [];
+    for(int i = 0; i<=DateTime.now().hour; i++){
+      double totalEmission = 0;
+
+      sessionList
+          .where((e) => e.dateCreated.weekday == i)
+          .map((e) => e.emissionQuantity)
+          .forEach((num e){totalEmission += e.toDouble();});
+
+      yS.add(totalEmission);
+    }
+    yS.sort();
+    double maxSpot = yS.last;
+    return maxSpot >= 500 ? maxSpot : 500;
+  }
+
+  double _totalCarbonUsed(){
+    double sum = 0;
+    sessionList.where((e) => isThisYear(e)).map((e) => e.emissionQuantity).forEach((num e){sum += e.toDouble();});
+    return sum;
   }
 
   @override
@@ -63,7 +113,7 @@ class _MonthlyGraphState extends State<MonthlyGraph> {
               Padding(
                 padding: const EdgeInsets.only(left: 20.0),
                 child: Text(
-                  '12300.23',
+                  _totalCarbonUsed().toStringAsFixed(2),
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 29,
@@ -76,7 +126,7 @@ class _MonthlyGraphState extends State<MonthlyGraph> {
               Padding(
                 padding: const EdgeInsets.only(left: 20.0),
                 child: Text(
-                  'Monthly Usage',
+                  'Yearly Usage',
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.65),
                     fontSize: 16,
@@ -86,7 +136,12 @@ class _MonthlyGraphState extends State<MonthlyGraph> {
                 ),
               ),
               const SizedBox(height: 20),
-              Expanded(child: BarChartSample()),
+              Expanded(
+                child: BarChartSample(
+                  data: monthlySpots(loading ? [] : sessionList),
+                  maxY: maxY(),
+                ),
+              ),
             ],
           ),
         ),
@@ -136,35 +191,7 @@ class _MonthlyGraphState extends State<MonthlyGraph> {
   }
 }
 
-class BarChartSample extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() => BarChartSampleState();
-}
-
-class BarChartSampleState extends State<BarChartSample> {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: double.infinity,
-      width: double.infinity,
-      decoration: const BoxDecoration(
-        borderRadius: BorderRadius.all(
-          Radius.circular(18),
-        ),
-        // color: Color(0xff232d37),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.only(right: 20.0, left: 12),
-        child: MyBarChart(),
-      ),
-    );
-  }
-}
-
-class MyBarChart extends StatelessWidget {
-  MyBarChart({
-    Key? key,
-  }) : super(key: key);
+class BarChartSample extends StatelessWidget {
 
   final barRodData = BarChartRodData(
     y: 250,
@@ -173,147 +200,153 @@ class MyBarChart extends StatelessWidget {
     borderRadius: BorderRadius.circular(4),
   );
 
-  final data = [
-    2500,
-    5000,
-    7400,
-    4000,
-    5500,
-    3000,
-    4200,
-    2500,
-    5000,
-    7400,
-    4000,
-    5500
-  ];
+
+  final List<double> data;
+  final double maxY;
+  final double interval;
+
+  String getTiles(value) {
+    if(double.parse(value.toString()).toStringAsFixed(0) == ((30/100)*maxY).toStringAsFixed(0)
+        || double.parse(value.toString()).toStringAsFixed(0) == ((60/100)*maxY).toStringAsFixed(0)
+        || double.parse(value.toString()).toStringAsFixed(0) == ((90/100)*maxY).toStringAsFixed(0))
+    {
+      // print(value);
+      return value.toStringAsFixed(0);
+    }
+    return '';
+  }
+
+
+  BarChartSample({
+    required this.data,
+    required this.maxY,
+  }) : interval = (5/100)*maxY;
+
 
   @override
   Widget build(BuildContext context) {
     int index = 0;
-    return BarChart(
-      BarChartData(
-        alignment: BarChartAlignment.spaceBetween,
-        maxY: 12000,
-        barTouchData: BarTouchData(
-          touchTooltipData: BarTouchTooltipData(
-            tooltipBgColor: Colors.white,
-            getTooltipItem: (
-              BarChartGroupData group,
-              int groupIndex,
-              BarChartRodData rod,
-              int rodIndex,
-            ) {
-              return BarTooltipItem(
-                rod.y.toString().substring(0, rod.y.toString().indexOf('.')) +
-                    ' Carbon Used',
-                TextStyle(
-                  color: Colors.black,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              );
-            },
-          ),
+    return Container(
+      height: double.infinity,
+      width: double.infinity,
+      decoration: const BoxDecoration(
+        borderRadius: BorderRadius.all(
+          Radius.circular(18),
         ),
-        gridData: FlGridData(
-          show: true,
-          drawHorizontalLine: true,
-          horizontalInterval: 1000,
-          getDrawingHorizontalLine: (value) {
-            if (value == 5000) {
-              return FlLine(
-                color: const Color(0xff7C828A),
-                strokeWidth: 1,
-                dashArray: [1, 3],
-              );
-            }
-            return FlLine(
-              color: Colors.transparent,
-              strokeWidth: 0.8,
-            );
-          },
-        ),
-        titlesData: FlTitlesData(
-          show: true,
-          leftTitles: SideTitles(
-            showTitles: true,
-            getTextStyles: (context, value) => const TextStyle(
-              color: Color(0xff67727d),
-              fontWeight: FontWeight.bold,
-              fontSize: 15,
+      ),
+      child: Padding(
+        padding: const EdgeInsets.only(right: 20.0, left: 12),
+        child: BarChart(
+          BarChartData(
+            alignment: BarChartAlignment.spaceBetween,
+            maxY: maxY,
+            barTouchData: BarTouchData(
+              touchTooltipData: BarTouchTooltipData(
+                tooltipBgColor: Colors.white,
+                getTooltipItem: (
+                  BarChartGroupData group,
+                  int groupIndex,
+                  BarChartRodData rod,
+                  int rodIndex,
+                ) {
+                  return BarTooltipItem(
+                    rod.y.toString().substring(0, rod.y.toString().indexOf('.')) +
+                        ' Carbon Used',
+                    TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  );
+                },
+              ),
             ),
-            interval: 1000,
-            getTitles: (value) {
-              switch (value.toInt()) {
-                case 3000:
-                  return '3000';
-                case 6000:
-                  return '6000';
-                case 9000:
-                  return '9000';
-              }
-              return '';
-            },
-            reservedSize: 28,
-            margin: 20,
-          ),
-          bottomTitles: SideTitles(
-            showTitles: true,
-            getTextStyles: (context, value) => const TextStyle(
-                color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
-            margin: 20,
-            rotateAngle: 45,
-            getTitles: (double value) {
-              switch (value.toInt()) {
-                case 0:
-                  return 'Jan';
-                case 1:
-                  return 'Feb';
-                case 2:
-                  return 'Mar';
-                case 3:
-                  return 'Apr';
-                case 4:
-                  return 'May';
-                case 5:
-                  return 'Jun';
-                case 6:
-                  return 'Jul';
-                case 7:
-                  return 'Aug';
-                case 8:
-                  return 'Sep';
-                case 9:
-                  return 'Oct';
-                case 10:
-                  return 'Nov';
-                case 11:
-                  return 'Dec';
-                default:
-                  return '';
-              }
-            },
-          ),
-        ),
-        borderData: FlBorderData(
-          show: false,
-        ),
-        barGroups: data
-            .map((e) => BarChartGroupData(
-                  x: index++,
-                  barRods: [
-                    barRodData.copyWith(
-                      y: e.toDouble(),
-                      colors: [
-                        e <= 5000
-                            ? Color(0xff7388A9).withOpacity(0.35)
-                            : const Color(0xff147AD6)
+            gridData: FlGridData(
+              show: true,
+              drawHorizontalLine: true,
+              horizontalInterval: interval,
+              getDrawingHorizontalLine: (value) {
+                if (double.parse(value.toString()).toStringAsFixed(0) == ((50/100)*maxY).toStringAsFixed(0)) {
+                  return FlLine(
+                    color: const Color(0xff7C828A),
+                    strokeWidth: 1,
+                    dashArray: [1, 3],
+                  );
+                }
+                return FlLine(
+                  color: Colors.transparent,
+                  strokeWidth: 0.8,
+                );
+              },
+            ),
+            titlesData: FlTitlesData(
+              show: true,
+              leftTitles: SideTitles(
+                showTitles: true,
+                getTextStyles: (context, value) => const TextStyle(
+                  color: Color(0xff67727d),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                ),
+                interval: interval,
+                getTitles: getTiles,
+                reservedSize: 28,
+                margin: 20,
+              ),
+              bottomTitles: SideTitles(
+                showTitles: true,
+                getTextStyles: (context, value) => const TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+                margin: 20,
+                rotateAngle: 45,
+                getTitles: (double value) {
+                  switch (value.toInt()) {
+                    case 0:
+                      return 'Jan';
+                    case 1:
+                      return 'Feb';
+                    case 2:
+                      return 'Mar';
+                    case 3:
+                      return 'Apr';
+                    case 4:
+                      return 'May';
+                    case 5:
+                      return 'Jun';
+                    case 6:
+                      return 'Jul';
+                    case 7:
+                      return 'Aug';
+                    case 8:
+                      return 'Sep';
+                    case 9:
+                      return 'Oct';
+                    case 10:
+                      return 'Nov';
+                    case 11:
+                      return 'Dec';
+                    default:
+                      return '';
+                  }
+                },
+              ),
+            ),
+            borderData: FlBorderData(
+              show: false,
+            ),
+            barGroups: data
+                .map((e) => BarChartGroupData(
+                      x: index++,
+                      barRods: [
+                        barRodData.copyWith(
+                          y: e.toDouble(),
+                          colors: [(e <= (50/100)*maxY) ? Color(0xff7388A9).withOpacity(0.35) : const Color(0xff147AD6)],
+                        )
                       ],
-                    )
-                  ],
-                ))
-            .toList(),
+                    ))
+                .toList(),
+          ),
+        ),
       ),
     );
   }

@@ -50,13 +50,13 @@ class _ActivityPageState extends State<ActivityPage> {
   Widget Graph() {
     switch (selectedMode) {
       case 'daily':
-        print('Returning daily');
+        // print('Returning daily');
         return DailyGraph();
       case 'weekly':
-        print('Returning weekly');
+        // print('Returning weekly');
         return WeeklyGraph();
       case 'monthly':
-        print('Returning monthly');
+        // print('Returning monthly');
         return MonthlyGraph();
       default:
         return Container();
