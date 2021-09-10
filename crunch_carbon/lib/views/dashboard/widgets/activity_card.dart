@@ -52,18 +52,14 @@ class ActivityCard extends StatelessWidget {
                   Spacer(),
                   RichText(
                     text: TextSpan(
-                      text: context
-                              .watch<DashboardProvider>()
-                              .totalC
-                              ?.toString() ??
-                          '0',
+                      text: context.watch<DashboardProvider>().totalDistance?.toStringAsFixed(2) ?? '-.-',
                       style: TextStyle(
                           fontSize: 29,
                           color: Colors.black,
                           fontWeight: FontWeight.bold),
                       children: const <TextSpan>[
                         TextSpan(
-                          text: '.k km ',
+                          text: ' km ',
                         ),
                         TextSpan(
                           text: 'Covered',

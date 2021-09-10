@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/src/provider.dart';
 import 'package:crunch_carbon/providers/DashboardProvider.dart';
 import 'package:crunch_carbon/widgets/wigets.dart';
 
 class FuelConsumptionSection extends StatelessWidget {
+  final double percent;
+  final bool isUp;
+  final bool loading;
   const FuelConsumptionSection({
-    Key? key,
+    Key? key, required this.percent, required this.isUp, required this.loading,
   }) : super(key: key);
 
   @override
@@ -22,7 +26,7 @@ class FuelConsumptionSection extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Fuel Consumption',
+                  'Carbon Emission',
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
@@ -31,16 +35,14 @@ class FuelConsumptionSection extends StatelessWidget {
                 Spacer(),
                 RichText(
                   text: TextSpan(
-                    text:
-                        context.watch<DashboardProvider>().totalC?.toString() ??
-                            '0',
+                    text: context.watch<DashboardProvider>().totalC?.toStringAsFixed(2) ?? '-.-',
                     style: TextStyle(
                         fontSize: 29,
                         color: Colors.black,
                         fontWeight: FontWeight.bold),
                     children: const <TextSpan>[
                       TextSpan(
-                        text: '.k km ',
+                        text: ' km ',
                       ),
                     ],
                   ),
@@ -58,12 +60,25 @@ class FuelConsumptionSection extends StatelessWidget {
             myTextButton(
               context,
               onPressed: () {},
-              width: 77,
+              width: loading ? 34 : 85,
               height: 34,
-              child: Row(
+              buttonColor: isUp ? Colors.red : Colors.green,
+              borderColor: Colors.transparent,
+              child: loading
+                  ? const SpinKitFadingCircle(
+                color: Colors.white,
+                size: 15.0,
+              )
+                  : Row(
                 children: [
                   Spacer(),
-                  Icon(
+                  isUp
+                      ? Icon(
+                    Icons.arrow_drop_up_sharp,
+                    color: Colors.white,
+                    size: 24,
+                  )
+                      : Icon(
                     Icons.arrow_drop_down_sharp,
                     color: Colors.white,
                     size: 24,
@@ -72,10 +87,10 @@ class FuelConsumptionSection extends StatelessWidget {
                   RichText(
                     text: TextSpan(
                       text: context
-                              .watch<DashboardProvider>()
-                              .percentC
-                              ?.toString() ??
-                          '0',
+                          .watch<DashboardProvider>()
+                          .percentC
+                          ?.toString() ??
+                          percent.toStringAsFixed(0),
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 13,

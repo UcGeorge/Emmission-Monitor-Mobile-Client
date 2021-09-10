@@ -8,6 +8,7 @@ class myTextButton extends StatelessWidget {
   final double? width;
   final double? height;
   final Widget? child;
+  final Color? borderColor;
 
   myTextButton(
     BuildContext context, {
@@ -17,7 +18,7 @@ class myTextButton extends StatelessWidget {
     required this.onPressed,
     this.width,
     this.height,
-    this.child,
+    this.child, this.borderColor,
   });
 
   @override
@@ -50,7 +51,7 @@ class myTextButton extends StatelessWidget {
             Size(150.0, 55.0),
           ),
           side: MaterialStateProperty.all<BorderSide>(
-            BorderSide(color: Colors.black, width: 1.0),
+            BorderSide(color: borderColor ?? Colors.black, width: 1.0),
           ),
         ),
       ),

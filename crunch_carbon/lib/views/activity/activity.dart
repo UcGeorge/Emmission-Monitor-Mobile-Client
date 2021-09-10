@@ -137,10 +137,11 @@ class _ActivityPageState extends State<ActivityPage> {
                         ),
                         myTextButton(
                           context,
-                          buttonColor: Colors.white,
                           onPressed: () {},
-                          width: loading ? 34 : 77,
+                          width: loading ? 34 : 85,
                           height: 34,
+                          buttonColor: isUp ? Colors.red : Colors.green,
+                          borderColor: Colors.transparent,
                           child: loading
                               ? const SpinKitFadingCircle(
                             color: Colors.black,
