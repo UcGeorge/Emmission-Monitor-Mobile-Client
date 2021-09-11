@@ -42,7 +42,7 @@ class FuelConsumptionSection extends StatelessWidget {
                         fontWeight: FontWeight.bold),
                     children: const <TextSpan>[
                       TextSpan(
-                        text: ' km ',
+                        text: ' g/km',
                       ),
                     ],
                   ),

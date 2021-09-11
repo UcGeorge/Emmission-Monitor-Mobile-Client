@@ -1,5 +1,6 @@
 import 'package:crunch_carbon/views/activity/activity.dart';
 import 'package:crunch_carbon/views/session/session.dart';
+import 'package:crunch_carbon/views/splashScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:page_transition/page_transition.dart';
@@ -7,6 +8,7 @@ import 'package:provider/src/provider.dart';
 import 'package:crunch_carbon/providers/UserProvider.dart';
 import 'package:crunch_carbon/views/dashboard/dashboard.dart';
 import 'package:crunch_carbon/views/profile/profile.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomepageDrawer extends StatelessWidget {
   const HomepageDrawer({
@@ -48,21 +50,37 @@ class LogoutMenuItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 40, left: 4),
-      child: ListTile(
-        leading: CircleAvatar(
-          radius: 19,
-          backgroundImage: AssetImage('images/Log out Icon.png'),
-        ),
-        title: Text(
-          'Logout',
-          style: TextStyle(
-            overflow: TextOverflow.fade,
-            fontSize: 16,
-            letterSpacing: 1.8,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
+    return GestureDetector(
+      onTap: () async{
+        final prefs = await SharedPreferences.getInstance();
+        prefs.remove('token');
+        prefs.remove('password');
+        prefs.remove('username');
+        prefs.remove('nickname');
+        Navigator.push(
+          context,
+          PageTransition(
+            type: PageTransitionType.fade,
+            child: SplashScreen(),
+          ),
+        );
+      },
+      child: Container(
+        margin: EdgeInsets.only(bottom: 40, left: 4),
+        child: ListTile(
+          leading: CircleAvatar(
+            radius: 19,
+            backgroundImage: AssetImage('images/Log out Icon.png'),
+          ),
+          title: Text(
+            'Logout',
+            style: TextStyle(
+              overflow: TextOverflow.fade,
+              fontSize: 16,
+              letterSpacing: 1.8,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
           ),
         ),
       ),
