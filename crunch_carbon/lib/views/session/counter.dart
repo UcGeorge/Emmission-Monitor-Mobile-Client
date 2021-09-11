@@ -202,7 +202,7 @@ class _CounterState extends State<Counter> {
                             var token = prefs.getString('token');
                             var username = prefs.getString('username');
                             widget.fuel.quantityConsumed = fuelConsumed;
-                            var putStatus = await context.read<SessionProvider>().putSession(token ?? 'undefined', username ?? 'undefined', Session(widget.fuel, finalDistance));
+                            var putStatus = await context.read<SessionProvider>().putSession(token ?? 'undefined', username ?? 'undefined', Session(widget.fuel, finalDistance/1000));
                             setState(() {
                               loading = false;
                             });

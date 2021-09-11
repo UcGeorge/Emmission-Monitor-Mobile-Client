@@ -17,6 +17,7 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   DateTime? currentBackPressTime;
+  bool loading = true;
 
   SnackBar snackBar = const SnackBar(
     backgroundColor: Colors.black,
@@ -43,9 +44,12 @@ class _DashboardState extends State<Dashboard> {
     final prefs = await SharedPreferences.getInstance();
     var token = prefs.getString('token');
     var username = prefs.getString('username');
-    context
+    await context
         .read<DashboardProvider>()
         .getSessions(token ?? 'undefined', username ?? 'undefined');
+    setState((){
+      loading = false;
+    });
   }
 
   @override
@@ -100,7 +104,11 @@ class _DashboardState extends State<Dashboard> {
                     children: [
                       Padding(
                         padding: EdgeInsets.all(24),
-                        child: FuelConsumptionSection(),
+                        child: FuelConsumptionSection(
+                          isUp: (context.read<DashboardProvider>().totalC ?? 0) > (context.read<DashboardProvider>().previousC ?? 0),
+                          loading: loading,
+                          percent: context.read<DashboardProvider>().percentC ?? 0,
+                        ),
                       ),
                       StylishDivider(),
                       Container(
