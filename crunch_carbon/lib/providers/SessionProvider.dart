@@ -75,7 +75,7 @@ class SessionProvider extends ChangeNotifier {
     };
     var request = http.Request('PUT', Uri.parse('https://crunch-carbon.herokuapp.com/sessions'));
     request.bodyFields = {
-      'username': 'petegeorge20005@gmail.com',
+      'username': username,
       'fuel': session.fuel.id.toString(),
       'distance': session.distance.toString(),
       'emission_quantity': session.emissionQuantity.toString(),
