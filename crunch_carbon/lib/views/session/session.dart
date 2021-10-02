@@ -1,4 +1,5 @@
 import 'package:crunch_carbon/models/fuel.dart';
+import 'package:crunch_carbon/models/vehicle.dart';
 import 'package:crunch_carbon/providers/DashboardProvider.dart';
 import 'package:crunch_carbon/providers/SessionProvider.dart';
 import 'package:crunch_carbon/views/session/counter.dart';
@@ -17,10 +18,14 @@ class SessionPage extends StatefulWidget {
 
 class _SessionPageState extends State<SessionPage> {
   late Map<String, Fuel> fuelOptions;
-  String? fuelOption;
-  String? vehicleType;
-  String? plateNo;
+  late String fuelOption;
+  late VehicleType vehicleType;
+  late String plateNo;
   String? plateNoError;
+  String? mileageError;
+  late EngineType engineType;
+  double? mileage;
+
   bool loading = false;
   bool initializing = true;
 
@@ -57,7 +62,12 @@ class _SessionPageState extends State<SessionPage> {
   }
 
   bool _checkValid() {
-    if (plateNo?.isEmpty ?? true) {
+    if (mileage == null) {
+      setState(() {
+        mileageError = "This is a required field";
+      });
+      return false;
+    } else if (plateNo.isEmpty) {
       setState(() {
         plateNoError = "This is a required field";
       });
@@ -77,7 +87,7 @@ class _SessionPageState extends State<SessionPage> {
     if (_checkValid()) {
       context
           .read<SessionProvider>()
-          .initialize(fuelOption!, vehicleType!, plateNo!);
+          .initialize(fuelOption, Vehicle(engineType: engineType, mileage: mileage!, vehicleType: vehicleType), plateNo);
       if (await context.read<SessionProvider>().locationService.allIsWell()) {
         Navigator.push(
           context,
@@ -225,8 +235,35 @@ class _SessionPageState extends State<SessionPage> {
           fieldName: 'Vehicle Type',
           options: ['Truck', 'Suv', 'Salon'],
           onSelectChanged: (value) {
-            vehicleType = value;
+            if(value == 'Truck'){
+              vehicleType = VehicleType.Truck;
+            }else if(value == 'Suv'){
+              vehicleType = VehicleType.Suv;
+            }else{
+              vehicleType = VehicleType.Salon;
+            }
           },
+        ),
+        ReuseableSelectField(
+          fieldName: 'Engine Type',
+          options: ['V6', '4 Cylinder'],
+          onSelectChanged: (value) {
+            engineType = value == 'V6' ? EngineType.V6 : EngineType.CYLINDER_4;
+          },
+        ),
+        SizedBox(
+          height: 5.5,
+        ),
+        ReuseableTextField(
+          fieldName: 'Mileage',
+          onTextChanged: (value) {
+            try{
+              mileage = double.parse(value);
+            }catch(e){
+              mileage = null;
+            }
+          },
+          errorMessage: mileageError,
         ),
         SizedBox(
           height: 5.5,

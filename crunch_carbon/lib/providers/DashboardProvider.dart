@@ -50,6 +50,7 @@ class DashboardProvider extends ChangeNotifier {
     List<Session> sessionList = (jsonBody['sessions'] as List).map((e) => Session(
       fuelList.where((element) => element.id == e['fuel_ID']).first,
       e['distance'],
+      null,
       emissionQuantity: e['emission_quantity'],
       dateCreated: DateTime.parse(e['dateadded']),
     )).toList();

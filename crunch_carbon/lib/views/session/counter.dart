@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:crunch_carbon/models/fuel.dart';
 import 'package:crunch_carbon/models/location.dart';
 import 'package:crunch_carbon/models/session.dart';
+import 'package:crunch_carbon/models/vehicle.dart';
 import 'package:crunch_carbon/providers/SessionProvider.dart';
 import 'package:crunch_carbon/views/dashboard/dashboard.dart';
 import 'package:crunch_carbon/views/dashboard/widgets/widgets.dart';
@@ -24,7 +25,7 @@ class Counter extends StatefulWidget {
 class _CounterState extends State<Counter> {
   bool loading = false;
   double finalDistance = 0.0;
-  double fuelConsumed = 0.0;
+  late Session session;
 
   @override
   void initState() {
@@ -89,12 +90,30 @@ class _CounterState extends State<Counter> {
                 Padding(
                   padding: const EdgeInsets.all(20.0),
                   child: TextButton(
-                    onPressed: () {
+                    onPressed: () async {
                       setState(() {
                         loading = true;
                       });
                       finalDistance = distance;
                       context.read<SessionProvider>().endTrip();
+
+                      session = Session(
+                        widget.fuel,
+                        finalDistance/1000,
+                        context.read<SessionProvider>().vehicle,
+                      );
+
+                      final prefs = await SharedPreferences.getInstance();
+                      var token = prefs.getString('token');
+                      var username = prefs.getString('username');
+                      var putStatus = await context.read<SessionProvider>().putSession(
+                        token ?? 'undefined',
+                        username ?? 'undefined',
+                        session,
+                      );
+                      setState(() {
+                        loading = false;
+                      });
                     },
                     child: Center(
                       child: loading
@@ -152,41 +171,20 @@ class _CounterState extends State<Counter> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'Enter Your Fuel Usage (in litres)',
+                        'Your Carbon emission',
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 23.0,
+                          fontSize: 18.0,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                       const SizedBox(height: 20),
-                      SizedBox(
-                        height: 45,
-                        child: TextField(
-                          cursorColor: Colors.white,
-                          autofocus: true,
-                          textAlignVertical: TextAlignVertical.center,
-                          textAlign: TextAlign.center,
-                          onChanged: (value){
-                            fuelConsumed = double.parse(value);
-                          },
-                          keyboardType: TextInputType.number,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 15.0,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          decoration: InputDecoration(
-                            focusColor: Colors.white,
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(29),
-                              borderSide: BorderSide(color: Colors.white, width: 2.0),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(29),
-                              borderSide: BorderSide(color: Colors.white, width: 1.0),
-                            ),
-                          ),
+                      Text(
+                        session.emissionQuantity.toStringAsFixed(2),
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 30.0,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                       const SizedBox(height: 20),
@@ -194,18 +192,7 @@ class _CounterState extends State<Counter> {
                         height: 45,
                         width: double.infinity,
                         child: TextButton(
-                          onPressed: () async {
-                            setState(() {
-                              loading = true;
-                            });
-                            final prefs = await SharedPreferences.getInstance();
-                            var token = prefs.getString('token');
-                            var username = prefs.getString('username');
-                            widget.fuel.quantityConsumed = fuelConsumed;
-                            var putStatus = await context.read<SessionProvider>().putSession(token ?? 'undefined', username ?? 'undefined', Session(widget.fuel, finalDistance/1000));
-                            setState(() {
-                              loading = false;
-                            });
+                          onPressed: () {
                             Navigator.push(
                               context,
                               PageTransition(
@@ -220,7 +207,7 @@ class _CounterState extends State<Counter> {
                             size: 15.0,
                           )
                               : Text(
-                                'Submit',
+                                'Okay',
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontSize: 13,

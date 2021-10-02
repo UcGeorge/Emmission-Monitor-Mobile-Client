@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:crunch_carbon/models/fuel.dart';
 import 'package:crunch_carbon/models/location.dart';
 import 'package:crunch_carbon/models/session.dart';
+import 'package:crunch_carbon/models/vehicle.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:location/location.dart';
 import 'package:geolocator/geolocator.dart';
@@ -12,7 +13,7 @@ import 'package:http/http.dart' as http;
 
 class SessionProvider extends ChangeNotifier {
   String? fuelOption;
-  String? vehicleType;
+  Vehicle? vehicle;
   String? plateNo;
   LocationService locationService;
   double distanceTravelled = 0;
@@ -24,9 +25,9 @@ class SessionProvider extends ChangeNotifier {
 
   SessionProvider() : this.locationService = LocationService();
 
-  void initialize(String fuelOption, String vehicleType, String plateNo) {
+  void initialize(String fuelOption, Vehicle vehicle, String plateNo) {
     this.fuelOption = fuelOption;
-    this.vehicleType = vehicleType;
+    this.vehicle = vehicle;
     this.plateNo = plateNo;
   }
 
@@ -136,7 +137,7 @@ class SessionProvider extends ChangeNotifier {
   void endTrip() async {
     await Future.delayed(Duration(seconds: 5));
     fuelOption = null;
-    vehicleType = null;
+    vehicle = null;
     plateNo = null;
     locationService;
     distanceTravelled = 0;
